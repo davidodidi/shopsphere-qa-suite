@@ -58,48 +58,40 @@ public class DriverManager {
     }
 
     private static WebDriver createLocalDriver(String browser, boolean headless) {
-        return switch (browser) {
-            case "firefox" -> {
-                WebDriverManager.firefoxdriver().setup();
-                FirefoxOptions opts = new FirefoxOptions();
-                if (headless) opts.addArguments("--headless");
-                yield new FirefoxDriver(opts);
-            }
-            case "edge" -> {
-                WebDriverManager.edgedriver().setup();
-                EdgeOptions opts = new EdgeOptions();
-                if (headless) opts.addArguments("--headless");
-                yield new EdgeDriver(opts);
-            }
-            default -> {
-                WebDriverManager.chromedriver().setup();
-                ChromeOptions opts = new ChromeOptions();
-                if (headless) opts.addArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage");
-                opts.addArguments("--window-size=1920,1080");
-                yield new ChromeDriver(opts);
-            }
-        };
+        if ("firefox".equals(browser)) {
+            WebDriverManager.firefoxdriver().setup();
+            FirefoxOptions opts = new FirefoxOptions();
+            if (headless) opts.addArguments("--headless");
+            return new FirefoxDriver(opts);
+        } else if ("edge".equals(browser)) {
+            WebDriverManager.edgedriver().setup();
+            EdgeOptions opts = new EdgeOptions();
+            if (headless) opts.addArguments("--headless");
+            return new EdgeDriver(opts);
+        } else {
+            WebDriverManager.chromedriver().setup();
+            ChromeOptions opts = new ChromeOptions();
+            if (headless) opts.addArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage");
+            opts.addArguments("--window-size=1920,1080");
+            return new ChromeDriver(opts);
+        }
     }
 
     private static WebDriver createRemoteDriver(String browser, boolean headless, String gridUrl)
             throws MalformedURLException {
-        return switch (browser) {
-            case "firefox" -> {
-                FirefoxOptions opts = new FirefoxOptions();
-                if (headless) opts.addArguments("--headless");
-                yield new RemoteWebDriver(new URL(gridUrl), opts);
-            }
-            case "edge" -> {
-                EdgeOptions opts = new EdgeOptions();
-                if (headless) opts.addArguments("--headless");
-                yield new RemoteWebDriver(new URL(gridUrl), opts);
-            }
-            default -> {
-                ChromeOptions opts = new ChromeOptions();
-                if (headless) opts.addArguments("--headless=new", "--no-sandbox");
-                yield new RemoteWebDriver(new URL(gridUrl), opts);
-            }
-        };
+        if ("firefox".equals(browser)) {
+            FirefoxOptions opts = new FirefoxOptions();
+            if (headless) opts.addArguments("--headless");
+            return new RemoteWebDriver(new URL(gridUrl), opts);
+        } else if ("edge".equals(browser)) {
+            EdgeOptions opts = new EdgeOptions();
+            if (headless) opts.addArguments("--headless");
+            return new RemoteWebDriver(new URL(gridUrl), opts);
+        } else {
+            ChromeOptions opts = new ChromeOptions();
+            if (headless) opts.addArguments("--headless=new", "--no-sandbox");
+            return new RemoteWebDriver(new URL(gridUrl), opts);
+        }
     }
 
     public static void quitDriver() {
