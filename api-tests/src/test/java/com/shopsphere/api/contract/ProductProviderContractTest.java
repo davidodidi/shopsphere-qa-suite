@@ -1,6 +1,6 @@
 package com.shopsphere.api.contract;
 
-import au.com.dius.pact.provider.junit5.HttpTestTarget;
+import au.com.dius.pact.provider.junit5.HttpsTestTarget;
 import au.com.dius.pact.provider.junit5.PactVerificationContext;
 import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvider;
 import au.com.dius.pact.provider.junitsupport.Provider;
@@ -34,7 +34,7 @@ public class ProductProviderContractTest {
     @BeforeEach
     void setupTarget(PactVerificationContext context) {
         // Point at the real FakeStoreAPI — port 443, HTTPS
-        context.setTarget(new HttpTestTarget("fakestoreapi.com", 443));
+        context.setTarget(new HttpsTestTarget("fakestoreapi.com", 443));
     }
 
     @TestTemplate
