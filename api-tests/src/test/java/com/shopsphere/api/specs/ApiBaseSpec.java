@@ -36,6 +36,7 @@ public class ApiBaseSpec {
 
     static {
         RestAssured.baseURI = config.getApiBaseUrl();
+        RestAssured.useRelaxedHTTPSValidation();
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
 
         requestSpec = new RequestSpecBuilder()
