@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🛒 ShopSphere QA Automation Suite
+# 🛒 ShopSphere QA Automation Suite (In Progress)
 
 ### Enterprise-Grade Full-Stack Testing Framework
 
