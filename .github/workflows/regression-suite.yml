@@ -102,7 +102,6 @@ jobs:
         run: |
           mvn test -pl api-tests \
             -Dcucumber.filter.tags="@api" \
-            -Dexcludes="**/ProductProviderContractTest.java" \
             -Denv=${{ github.event.inputs.environment || 'staging' }} \
             --no-transfer-progress
 
