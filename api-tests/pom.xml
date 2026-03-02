@@ -34,10 +34,6 @@
                     <excludes>
                         <exclude>**/ProductProviderContractTest.java</exclude>
                     </excludes>
-                    <!-- Ensure Allure agent is attached for report generation -->
-                    <argLine>
-                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
-                    </argLine>
                     <systemPropertyVariables>
                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
                     </systemPropertyVariables>
