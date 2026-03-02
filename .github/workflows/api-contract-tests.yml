@@ -26,6 +26,7 @@ jobs:
         run: |
           mvn test -pl api-tests \
             -Dtest="ProductConsumerContractTest" \
+            -Denv=staging \
             --no-transfer-progress
 
       - name: Upload Generated Pacts
