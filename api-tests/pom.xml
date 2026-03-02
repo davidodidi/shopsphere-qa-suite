@@ -40,6 +40,10 @@
                     <excludes>
                         <exclude>**/ProductProviderContractTest.java</exclude>
                     </excludes>
+                    <!-- Force TestNG provider so ApiRegressionRunner is found -->
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/testng-api.xml</suiteXmlFile>
+                    </suiteXmlFiles>
                     <argLine>
                         -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar
                     </argLine>

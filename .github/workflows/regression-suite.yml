@@ -101,7 +101,6 @@ jobs:
       - name: Run API Regression Tests
         run: |
           mvn test -pl api-tests \
-            -Dtest="ApiRegressionRunner" \
             -Denv=${{ github.event.inputs.environment || 'staging' }} \
             --no-transfer-progress
 
