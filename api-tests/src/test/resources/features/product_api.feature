@@ -77,8 +77,8 @@ Feature: Product API - HTTP Protocol Validation
     And the response body should be empty
 
   @api
-  Scenario: OPTIONS request returns allowed HTTP methods
-    When I send an OPTIONS request to "/products"
-    Then the response should include "Allow" header
-    And the Allow header should contain "GET"
-    And the Allow header should contain "POST"
+  Scenario: GET products by category returns filtered results
+    When I send a GET request to "/products/category/laptops"
+    Then the response status code should be 200
+    And the response Content-Type should be "application/json"
+    And the response body should be a non-empty array

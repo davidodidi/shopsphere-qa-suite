@@ -33,7 +33,7 @@ Feature: User Service API Validation
       }
       """
     Then the response status code should be 200
-    And the response should contain field "token"
+    And the response should contain field "accessToken"
 
   @api
   Scenario: GET limited users list respects limit parameter
