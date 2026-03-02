@@ -20,8 +20,15 @@
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter-api</artifactId></dependency>
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter-engine</artifactId></dependency>
         <dependency><groupId>io.qameta.allure</groupId><artifactId>allure-cucumber7-jvm</artifactId></dependency>
+        <dependency><groupId>io.qameta.allure</groupId><artifactId>allure-testng</artifactId></dependency>
         <dependency><groupId>io.qameta.allure</groupId><artifactId>allure-rest-assured</artifactId></dependency>
         <dependency><groupId>org.hamcrest</groupId><artifactId>hamcrest</artifactId></dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -30,10 +37,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <!-- Exclude provider test by default — needs pact files from consumer first -->
                     <excludes>
                         <exclude>**/ProductProviderContractTest.java</exclude>
                     </excludes>
+                    <argLine>
+                        -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar
+                    </argLine>
                     <systemPropertyVariables>
                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
                     </systemPropertyVariables>
