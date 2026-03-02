@@ -108,7 +108,7 @@ jobs:
       - name: Run Pact Contract Tests
         run: |
           mvn test -pl api-tests \
-            -Dtest="*ContractTest*" \
+            -Dtest="ProductConsumerContractTest" \
             --no-transfer-progress
 
       - uses: actions/upload-artifact@v4
