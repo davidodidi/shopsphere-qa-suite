@@ -2,6 +2,7 @@ package com.shopsphere.core;
 
 import com.shopsphere.config.ConfigReader;
 import org.junit.jupiter.api.*;
+import java.lang.reflect.Field;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -14,13 +15,27 @@ class ConfigReaderTest {
     private ConfigReader config;
 
     @BeforeEach
-    void setUp() {
-        System.setProperty("env", "staging");
+    void setUp() throws Exception {
+        // Reset singleton so each test gets a fresh instance
+        Field instance = ConfigReader.class.getDeclaredField("instance");
+        instance.setAccessible(true);
+        instance.set(null, null);
+        // Use dev environment — always available on classpath
+        System.setProperty("env", "dev");
         config = ConfigReader.getInstance();
     }
 
+    @AfterEach
+    void tearDown() throws Exception {
+        System.clearProperty("env");
+        System.clearProperty("browser");
+        Field instance = ConfigReader.class.getDeclaredField("instance");
+        instance.setAccessible(true);
+        instance.set(null, null);
+    }
+
     @Test
-    @DisplayName("Should load base URL from staging config")
+    @DisplayName("Should load base URL from dev config")
     void shouldLoadBaseUrl() {
         String baseUrl = config.getBaseUrl();
         assertNotNull(baseUrl, "Base URL should not be null");
@@ -54,6 +69,5 @@ class ConfigReaderTest {
     void systemPropertyShouldOverrideConfig() {
         System.setProperty("browser", "firefox");
         assertEquals("firefox", config.get("browser"));
-        System.clearProperty("browser");
     }
 }

@@ -2,12 +2,12 @@ package com.shopsphere.config;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Singleton ConfigReader - loads environment-specific properties.
+ * Singleton ConfigReader - loads environment-specific properties from classpath.
  * Usage: -Denv=staging (dev | staging | prod)
  */
 public class ConfigReader {
@@ -16,14 +16,17 @@ public class ConfigReader {
     private final Properties properties = new Properties();
 
     private ConfigReader() {
-        String env = System.getProperty("env", "staging");
-        String filePath = "core/src/main/resources/config/" + env + ".properties";
+        String env = System.getProperty("env", "dev");
+        String resourcePath = "config/" + env + ".properties";
         log.info("Loading config for environment: {}", env);
-        try (FileInputStream fis = new FileInputStream(filePath)) {
-            properties.load(fis);
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
+            if (is == null) {
+                throw new RuntimeException("Config file not found on classpath: " + resourcePath);
+            }
+            properties.load(is);
         } catch (IOException e) {
-            log.error("Failed to load config file: {}", filePath);
-            throw new RuntimeException("Config file not found: " + filePath, e);
+            log.error("Failed to load config file: {}", resourcePath);
+            throw new RuntimeException("Failed to load config: " + resourcePath, e);
         }
     }
 
