@@ -29,7 +29,7 @@
         <cucumber.version>7.14.0</cucumber.version>
         <testng.version>7.8.0</testng.version>
         <junit.version>5.10.0</junit.version>
-        <pact.version>4.6.5</pact.version>
+        <pact.version>4.1.39</pact.version>
         <allure.version>2.24.0</allure.version>
         <jackson.version>2.15.3</jackson.version>
         <lombok.version>1.18.30</lombok.version>
