@@ -34,6 +34,7 @@ jobs:
         with:
           name: unit-test-results
           path: core/target/surefire-reports/
+          if-no-files-found: warn
 
   web-regression:
     name: 🌐 Web Regression
@@ -52,6 +53,9 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
+
+      - name: Build and install core module
+        run: mvn install -pl core -DskipTests --no-transfer-progress
 
       - name: Start Selenium Grid
         run: |
@@ -75,6 +79,7 @@ jobs:
         with:
           name: allure-results-web-${{ matrix.browser }}
           path: web-tests/target/allure-results/
+          if-no-files-found: warn
 
   api-regression:
     name: 🔌 API Regression + Contract Tests
@@ -89,6 +94,9 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
+
+      - name: Build and install core module
+        run: mvn install -pl core -DskipTests --no-transfer-progress
 
       - name: Run API Regression Tests
         run: |
@@ -108,6 +116,7 @@ jobs:
         with:
           name: allure-results-api
           path: api-tests/target/allure-results/
+          if-no-files-found: warn
 
       - name: Upload Pact Files
         uses: actions/upload-artifact@v4
@@ -115,6 +124,7 @@ jobs:
         with:
           name: pact-contracts
           path: api-tests/target/pacts/
+          if-no-files-found: warn
 
   e2e-tests:
     name: 🔄 E2E System Tests
@@ -129,6 +139,9 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
+
+      - name: Build and install core module
+        run: mvn install -pl core -DskipTests --no-transfer-progress
 
       - name: Start Selenium Grid
         run: |
@@ -148,6 +161,7 @@ jobs:
         with:
           name: allure-results-e2e
           path: web-tests/target/allure-results/
+          if-no-files-found: warn
 
   publish-allure-report:
     name: 📈 Publish Allure Report to GitHub Pages
@@ -178,8 +192,7 @@ jobs:
           allure --version
 
       - name: Generate Allure Report
-        run: |
-          allure generate allure-results --clean -o allure-report
+        run: allure generate allure-results --clean -o allure-report
         continue-on-error: true
 
       - name: Deploy to GitHub Pages
