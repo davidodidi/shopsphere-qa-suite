@@ -17,6 +17,7 @@
         <dependency><groupId>org.testng</groupId><artifactId>testng</artifactId></dependency>
         <dependency><groupId>au.com.dius.pact.consumer</groupId><artifactId>junit5</artifactId></dependency>
         <dependency><groupId>au.com.dius.pact.provider</groupId><artifactId>junit5</artifactId></dependency>
+        <!-- JUnit kept only for Pact contract tests, excluded from surefire scan -->
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter-api</artifactId></dependency>
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter-engine</artifactId></dependency>
         <dependency><groupId>io.qameta.allure</groupId><artifactId>allure-cucumber7-jvm</artifactId></dependency>
@@ -36,11 +37,19 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <dependencies>
+                    <!-- Force TestNG provider explicitly -->
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-testng</artifactId>
+                        <version>3.2.2</version>
+                    </dependency>
+                </dependencies>
                 <configuration>
                     <excludes>
                         <exclude>**/ProductProviderContractTest.java</exclude>
+                        <exclude>**/ProductConsumerContractTest.java</exclude>
                     </excludes>
-                    <!-- Force TestNG provider so ApiRegressionRunner is found -->
                     <suiteXmlFiles>
                         <suiteXmlFile>src/test/resources/testng-api.xml</suiteXmlFile>
                     </suiteXmlFiles>
@@ -51,6 +60,25 @@
                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
                     </systemPropertyVariables>
                 </configuration>
+            </plugin>
+            <!-- Separate execution for Pact contract tests using JUnit -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.2.2</version>
+                <configuration>
+                    <includes>
+                        <include>**/ProductConsumerContractTest.java</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

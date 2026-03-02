@@ -106,11 +106,10 @@ jobs:
 
       - name: Run Consumer Contract Test (generates pact file)
         run: |
-          mvn test -pl api-tests \
-            -Dtest="ProductConsumerContractTest" \
+          mvn verify -pl api-tests \
             --no-transfer-progress
 
-      - name: Run Provider Contract Verification (verifies against FakeStoreAPI)
+      - name: Run Provider Contract Verification (verifies against mock server)
         run: |
           mvn test -pl api-tests \
             -Dtest="ProductProviderContractTest" \
