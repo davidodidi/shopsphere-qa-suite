@@ -22,6 +22,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Build and install core module
+        run: mvn install -DskipTests --no-transfer-progress
+
       - name: Run Consumer Contract Tests
         run: |
           mvn test -pl api-tests \
