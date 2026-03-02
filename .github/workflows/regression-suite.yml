@@ -55,7 +55,7 @@ jobs:
           cache: maven
 
       - name: Build and install core module
-        run: mvn install -pl core -DskipTests --no-transfer-progress
+        run: mvn install -DskipTests --no-transfer-progress
 
       - name: Start Selenium Grid
         run: |
@@ -96,7 +96,7 @@ jobs:
           cache: maven
 
       - name: Build and install core module
-        run: mvn install -pl core -DskipTests --no-transfer-progress
+        run: mvn install -DskipTests --no-transfer-progress
 
       - name: Run API Regression Tests
         run: |
@@ -141,7 +141,7 @@ jobs:
           cache: maven
 
       - name: Build and install core module
-        run: mvn install -pl core -DskipTests --no-transfer-progress
+        run: mvn install -DskipTests --no-transfer-progress
 
       - name: Start Selenium Grid
         run: |
