@@ -34,7 +34,7 @@ public class ProductProviderContractTest {
     @BeforeEach
     void setupTarget(PactVerificationContext context) {
         // Point at the real FakeStoreAPI — port 443, HTTPS
-        context.setTarget(new HttpTestTarget("fakestoreapi.com", 443, true));
+        context.setTarget(new HttpTestTarget("fakestoreapi.com", 443));
     }
 
     @TestTemplate
