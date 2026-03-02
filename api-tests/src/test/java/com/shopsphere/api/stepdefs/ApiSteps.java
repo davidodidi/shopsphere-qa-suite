@@ -74,7 +74,13 @@ public class ApiSteps extends ApiBaseSpec {
 
     @When("I send a PUT request to {string} with updated data")
     public void iSendPutRequest(String endpoint) {
-        Map<String, Object> body = Map.of("name", "Updated Product", "price", 49.99);
+        Map<String, Object> body = Map.of(
+                "title", "Updated Product",
+                "price", 49.99,
+                "category", "electronics",
+                "description", "Updated via automation",
+                "image", "https://fakestoreapi.in/img/updated.jpg"
+        );
         response = givenAuth(authToken).body(body).when().put(endpoint).then().extract().response();
     }
 

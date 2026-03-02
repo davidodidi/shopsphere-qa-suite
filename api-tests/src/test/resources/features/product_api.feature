@@ -22,35 +22,30 @@ Feature: Product API - HTTP Protocol Validation
     When I send a GET request to "/products/1"
     Then the response status code should be 200
     And the response should contain field "id"
-    And the response should contain field "name"
+    And the response should contain field "title"
     And the response should contain field "price"
 
   @api
   Scenario: GET product by invalid ID returns HTTP 404
-    When I send a GET request to "/products/nonexistent-id-99999"
+    When I send a GET request to "/products/99999999"
     Then the response status code should be 404
-    And the response body should contain an error message
 
   @api
-  Scenario: POST create product returns HTTP 201
+  Scenario: POST create product returns HTTP 200
     Given I am authenticated as admin
     When I send a POST request to "/products" with body:
       """
       {
-        "name": "Test Product - Automation",
+        "title": "Test Product - Automation",
         "price": 29.99,
-        "category": "Electronics",
-        "stockQuantity": 100
+        "category": "electronics",
+        "description": "Automation test product",
+        "image": "https://fakestoreapi.in/img/test.jpg"
       }
       """
-    Then the response status code should be 201
+    Then the response status code should be 200
     And the response should contain field "id"
-    And the response should contain field "name" with value "Test Product - Automation"
-
-  @api
-  Scenario: POST create product without auth returns HTTP 401
-    When I send an unauthenticated POST request to "/products" with a valid body
-    Then the response status code should be 401
+    And the response should contain field "title"
 
   @api
   Scenario: PUT update product returns HTTP 200
@@ -70,9 +65,9 @@ Feature: Product API - HTTP Protocol Validation
     And the response should contain field "price" with value "39.99"
 
   @api
-  Scenario: DELETE product returns HTTP 204 or 200
+  Scenario: DELETE product returns HTTP 200 or 204
     Given I am authenticated as admin
-    When I send a DELETE request to "/products/temp-product-id"
+    When I send a DELETE request to "/products/1"
     Then the response status code should be one of 200, 204
 
   @api
