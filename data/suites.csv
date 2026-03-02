@@ -1,0 +1,46 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"skipped","Mon Mar 02 06:44:28 UTC 2026","Mon Mar 02 06:44:28 UTC 2026","355","","End-to-End Checkout Flow","","Complete successful checkout flow","","Complete successful checkout flow","  As a ShopSphere customer
+  I want to complete a purchase
+  So that I can receive my ordered items"
+"skipped","Mon Mar 02 06:44:28 UTC 2026","Mon Mar 02 06:44:28 UTC 2026","5","","User Authentication","","Login validation with multiple user types","","Login validation with multiple user types","  As a ShopSphere customer
+  I want to log into my account
+  So that I can access my personalised shopping experience"
+"skipped","Mon Mar 02 06:44:28 UTC 2026","Mon Mar 02 06:44:28 UTC 2026","5","","User Authentication","","Login validation with multiple user types","","Login validation with multiple user types","  As a ShopSphere customer
+  I want to log into my account
+  So that I can access my personalised shopping experience"
+"skipped","Mon Mar 02 06:44:28 UTC 2026","Mon Mar 02 06:44:28 UTC 2026","5","","User Authentication","","Locked out user cannot login","","Locked out user cannot login","  As a ShopSphere customer
+  I want to log into my account
+  So that I can access my personalised shopping experience"
+"skipped","Mon Mar 02 06:44:28 UTC 2026","Mon Mar 02 06:44:28 UTC 2026","14","","User Authentication","","Login fails with invalid password","","Login fails with invalid password","  As a ShopSphere customer
+  I want to log into my account
+  So that I can access my personalised shopping experience"
+"skipped","Mon Mar 02 06:44:29 UTC 2026","Mon Mar 02 06:44:29 UTC 2026","10","","Product Browsing","","Add product to cart from listing","","Add product to cart from listing","  As a ShopSphere customer
+  I want to browse and sort products
+  So that I can find what I want to buy"
+"skipped","Mon Mar 02 06:44:28 UTC 2026","Mon Mar 02 06:44:28 UTC 2026","6","","User Authentication","","Login validation with multiple user types","","Login validation with multiple user types","  As a ShopSphere customer
+  I want to log into my account
+  So that I can access my personalised shopping experience"
+"skipped","Mon Mar 02 06:44:28 UTC 2026","Mon Mar 02 06:44:28 UTC 2026","16","","End-to-End Checkout Flow","","Checkout fails without filling in required fields","","Checkout fails without filling in required fields","  As a ShopSphere customer
+  I want to complete a purchase
+  So that I can receive my ordered items"
+"skipped","Mon Mar 02 06:44:28 UTC 2026","Mon Mar 02 06:44:28 UTC 2026","9","","User Authentication","","Login fails with invalid username","","Login fails with invalid username","  As a ShopSphere customer
+  I want to log into my account
+  So that I can access my personalised shopping experience"
+"skipped","Mon Mar 02 06:44:28 UTC 2026","Mon Mar 02 06:44:28 UTC 2026","8","","Product Browsing","","Sort products by price low to high","","Sort products by price low to high","  As a ShopSphere customer
+  I want to browse and sort products
+  So that I can find what I want to buy"
+"skipped","Mon Mar 02 06:44:28 UTC 2026","Mon Mar 02 06:44:28 UTC 2026","11","","Product Browsing","","Products page displays items","","Products page displays items","  As a ShopSphere customer
+  I want to browse and sort products
+  So that I can find what I want to buy"
+"skipped","Mon Mar 02 06:44:28 UTC 2026","Mon Mar 02 06:44:28 UTC 2026","24","","End-to-End Checkout Flow","","Multiple items can be purchased together","","Multiple items can be purchased together","  As a ShopSphere customer
+  I want to complete a purchase
+  So that I can receive my ordered items"
+"skipped","Mon Mar 02 06:44:29 UTC 2026","Mon Mar 02 06:44:29 UTC 2026","16","","Product Browsing","","View product detail page","","View product detail page","  As a ShopSphere customer
+  I want to browse and sort products
+  So that I can find what I want to buy"
+"skipped","Mon Mar 02 06:44:28 UTC 2026","Mon Mar 02 06:44:28 UTC 2026","12","","Product Browsing","","Sort products by name A to Z","","Sort products by name A to Z","  As a ShopSphere customer
+  I want to browse and sort products
+  So that I can find what I want to buy"
+"skipped","Mon Mar 02 06:44:28 UTC 2026","Mon Mar 02 06:44:28 UTC 2026","9","","User Authentication","","Successful login with valid credentials","","Successful login with valid credentials","  As a ShopSphere customer
+  I want to log into my account
+  So that I can access my personalised shopping experience"
