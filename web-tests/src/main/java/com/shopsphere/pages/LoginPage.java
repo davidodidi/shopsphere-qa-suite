@@ -77,6 +77,10 @@ public class LoginPage extends BasePage {
 
     @Override
     public boolean isLoaded() {
-        return isDisplayed(loginLogo);
+        try {
+            return loginLogo.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

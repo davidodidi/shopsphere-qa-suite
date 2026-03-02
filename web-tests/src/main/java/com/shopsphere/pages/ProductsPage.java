@@ -39,7 +39,7 @@ public class ProductsPage extends BasePage {
     @Step("Getting all product names")
     public List<String> getAllProductNames() {
         return productItems.stream()
-                .map(item -> item.findElement(By.css(".inventory_item_name")).getText())
+                .map(item -> item.findElement(By.cssSelector(".inventory_item_name")).getText())
                 .collect(Collectors.toList());
     }
 
@@ -47,10 +47,10 @@ public class ProductsPage extends BasePage {
     public ProductsPage addProductToCart(String productName) {
         log.info("Adding product to cart: {}", productName);
         productItems.stream()
-                .filter(item -> item.findElement(By.css(".inventory_item_name"))
+                .filter(item -> item.findElement(By.cssSelector(".inventory_item_name"))
                         .getText().equals(productName))
                 .findFirst()
-                .ifPresent(item -> item.findElement(By.css("button")).click());
+                .ifPresent(item -> item.findElement(By.cssSelector("button")).click());
         return this;
     }
 
@@ -63,10 +63,10 @@ public class ProductsPage extends BasePage {
     @Step("Clicking on product: {productName}")
     public ProductDetailPage clickProduct(String productName) {
         productItems.stream()
-                .filter(item -> item.findElement(By.css(".inventory_item_name"))
+                .filter(item -> item.findElement(By.cssSelector(".inventory_item_name"))
                         .getText().equals(productName))
                 .findFirst()
-                .ifPresent(item -> item.findElement(By.css(".inventory_item_name")).click());
+                .ifPresent(item -> item.findElement(By.cssSelector(".inventory_item_name")).click());
         return new ProductDetailPage();
     }
 
