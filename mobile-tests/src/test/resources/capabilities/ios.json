@@ -1,0 +1,10 @@
+{
+  "platformName": "iOS",
+  "deviceName": "iPhone 14",
+  "platformVersion": "16.0",
+  "automationName": "XCUITest",
+  "app": "src/test/resources/apps/SauceLabs.app",
+  "bundleId": "com.swaglabsmobileapp",
+  "newCommandTimeout": 300,
+  "autoAcceptAlerts": true
+}

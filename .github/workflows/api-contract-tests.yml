@@ -1,0 +1,40 @@
+name: 📋 Contract Tests — API Changes
+
+on:
+  push:
+    paths:
+      - 'api-tests/**'
+      - 'core/src/main/java/com/shopsphere/constants/APIEndpoints.java'
+  pull_request:
+    paths:
+      - 'api-tests/**'
+
+jobs:
+  contract-verification:
+    name: 🤝 Pact Contract Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run Consumer Contract Tests
+        run: |
+          mvn test -pl api-tests \
+            -Dtest="ProductConsumerContractTest" \
+            --no-transfer-progress
+
+      - name: Upload Generated Pacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pact-contracts
+          path: api-tests/target/pacts/
+
+      - name: Summary
+        run: |
+          echo "## 📋 Contract Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "Consumer contracts generated in \`target/pacts/\`" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,40 @@
+# Maven
+target/
+*.class
+*.jar
+*.war
+
+# Test outputs
+allure-results/
+allure-report/
+cucumber-reports/
+screenshots/
+test-output/
+
+# JMeter
+performance/results/*.jtl
+performance/results/*-report/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# Pact
+target/pacts/
+
+# Secrets
+*.env
+secrets.properties
+
+# Mobile
+src/test/resources/apps/*.apk
+src/test/resources/apps/*.ipa
+src/test/resources/apps/*.app
+
+# OS
+.DS_Store
+Thumbs.db

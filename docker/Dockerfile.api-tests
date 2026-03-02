@@ -1,0 +1,19 @@
+FROM maven:3.9-eclipse-temurin-11
+
+WORKDIR /app
+COPY pom.xml .
+COPY core/pom.xml core/
+COPY api-tests/pom.xml api-tests/
+
+RUN mvn dependency:go-offline -pl core,api-tests -am -q
+
+COPY core/src core/src
+COPY api-tests/src api-tests/src
+
+ARG ENV=staging
+ARG TAGS=@api
+
+CMD mvn test -pl api-tests \
+    -Dcucumber.filter.tags="${TAGS}" \
+    -Denv=${ENV} \
+    --no-transfer-progress

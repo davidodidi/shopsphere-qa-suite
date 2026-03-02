@@ -1,0 +1,115 @@
+version: "3.8"
+
+# ═══════════════════════════════════════════════════════════════
+# ShopSphere QA Infrastructure
+# Services: Selenium Grid (Hub + Nodes) + Appium + Allure Server
+# ═══════════════════════════════════════════════════════════════
+
+services:
+
+  # ─── Selenium Grid Hub ────────────────────────────────────────
+  selenium-hub:
+    image: selenium/hub:4.15.0
+    container_name: shopsphere-selenium-hub
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    environment:
+      - GRID_MAX_SESSION=16
+      - GRID_BROWSER_TIMEOUT=300
+      - GRID_TIMEOUT=300
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+    networks:
+      - shopsphere-qa
+
+  # ─── Chrome Nodes ─────────────────────────────────────────────
+  chrome-node-1:
+    image: selenium/node-chrome:4.15.0
+    container_name: shopsphere-chrome-1
+    depends_on:
+      selenium-hub:
+        condition: service_healthy
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_MAX_SESSIONS=4
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - SE_VNC_NO_PASSWORD=1
+    ports:
+      - "7900:7900"    # VNC for debugging
+    shm_size: "2gb"
+    networks:
+      - shopsphere-qa
+
+  chrome-node-2:
+    image: selenium/node-chrome:4.15.0
+    container_name: shopsphere-chrome-2
+    depends_on:
+      selenium-hub:
+        condition: service_healthy
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_MAX_SESSIONS=4
+    shm_size: "2gb"
+    networks:
+      - shopsphere-qa
+
+  # ─── Firefox Node ─────────────────────────────────────────────
+  firefox-node:
+    image: selenium/node-firefox:4.15.0
+    container_name: shopsphere-firefox
+    depends_on:
+      selenium-hub:
+        condition: service_healthy
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_MAX_SESSIONS=2
+    shm_size: "2gb"
+    networks:
+      - shopsphere-qa
+
+  # ─── Allure Report Server ────────────────────────────────────
+  allure:
+    image: frankescobar/allure-docker-service:latest
+    container_name: shopsphere-allure
+    ports:
+      - "5050:5050"
+    volumes:
+      - allure-results:/app/allure-results
+      - allure-reports:/app/default-reports
+    environment:
+      CHECK_RESULTS_EVERY_SECONDS: 5
+      KEEP_HISTORY: 20
+    networks:
+      - shopsphere-qa
+
+  # ─── Allure UI ───────────────────────────────────────────────
+  allure-ui:
+    image: frankescobar/allure-docker-service-ui:latest
+    container_name: shopsphere-allure-ui
+    ports:
+      - "5252:5252"
+    environment:
+      ALLURE_DOCKER_PUBLIC_API_URL: "http://localhost:5050"
+    depends_on:
+      - allure
+    networks:
+      - shopsphere-qa
+
+networks:
+  shopsphere-qa:
+    driver: bridge
+
+volumes:
+  allure-results:
+  allure-reports:

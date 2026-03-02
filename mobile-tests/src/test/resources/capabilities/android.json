@@ -1,0 +1,13 @@
+{
+  "platformName": "Android",
+  "deviceName": "Android Emulator",
+  "platformVersion": "12.0",
+  "automationName": "UIAutomator2",
+  "app": "src/test/resources/apps/SauceLabs.apk",
+  "appPackage": "com.swaglabsmobileapp",
+  "appActivity": ".MainActivity",
+  "newCommandTimeout": 300,
+  "autoGrantPermissions": true,
+  "noReset": false,
+  "fullReset": false
+}

@@ -1,0 +1,58 @@
+name: ⚡ Performance Tests — JMeter
+
+on:
+  schedule:
+    - cron: '0 3 * * 0'   # 3 AM UTC every Sunday
+  workflow_dispatch:
+    inputs:
+      threads:
+        description: 'Number of concurrent users'
+        default: '10'
+      duration:
+        description: 'Test duration in seconds'
+        default: '120'
+      host:
+        description: 'Target host'
+        default: 'www.saucedemo.com'
+
+jobs:
+  performance-smoke:
+    name: ⚡ JMeter Smoke Load
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install JMeter
+        run: |
+          wget -q https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.2.tgz
+          tar -xzf apache-jmeter-5.6.2.tgz
+          echo "$(pwd)/apache-jmeter-5.6.2/bin" >> $GITHUB_PATH
+
+      - name: Create results directory
+        run: mkdir -p performance/results
+
+      - name: Run JMeter Smoke Load Test
+        run: |
+          jmeter -n \
+            -t performance/test-plans/smoke-load.jmx \
+            -l performance/results/smoke-results.jtl \
+            -e -o performance/results/smoke-html-report \
+            -Jhost=${{ github.event.inputs.host || 'www.saucedemo.com' }} \
+            -Jthreads=${{ github.event.inputs.threads || '10' }} \
+            -Jduration=${{ github.event.inputs.duration || '120' }}
+
+      - name: Upload JMeter Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jmeter-performance-results
+          path: performance/results/
+
+      - name: Check Error Rate
+        run: |
+          python3 performance/scripts/check_results.py \
+            performance/results/smoke-results.jtl \
+            --max-error-rate 1.0 \
+            --max-p95-ms 3000

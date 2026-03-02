@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.shopsphere</groupId>
+        <artifactId>shopsphere-qa-suite</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>api-tests</artifactId>
+    <dependencies>
+        <dependency><groupId>com.shopsphere</groupId><artifactId>core</artifactId></dependency>
+        <dependency><groupId>io.rest-assured</groupId><artifactId>rest-assured</artifactId></dependency>
+        <dependency><groupId>io.rest-assured</groupId><artifactId>json-path</artifactId></dependency>
+        <dependency><groupId>io.cucumber</groupId><artifactId>cucumber-java</artifactId></dependency>
+        <dependency><groupId>io.cucumber</groupId><artifactId>cucumber-testng</artifactId></dependency>
+        <dependency><groupId>org.testng</groupId><artifactId>testng</artifactId></dependency>
+        <dependency><groupId>au.com.dius.pact.consumer</groupId><artifactId>junit5</artifactId></dependency>
+        <dependency><groupId>au.com.dius.pact.provider</groupId><artifactId>junit5</artifactId></dependency>
+        <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter-api</artifactId></dependency>
+        <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter-engine</artifactId></dependency>
+        <dependency><groupId>io.qameta.allure</groupId><artifactId>allure-cucumber7-jvm</artifactId></dependency>
+        <dependency><groupId>io.qameta.allure</groupId><artifactId>allure-rest-assured</artifactId></dependency>
+        <dependency><groupId>org.hamcrest</groupId><artifactId>hamcrest</artifactId></dependency>
+    </dependencies>
+</project>

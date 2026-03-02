@@ -1,0 +1,28 @@
+FROM maven:3.9-eclipse-temurin-11 AS builder
+
+WORKDIR /app
+COPY pom.xml .
+COPY core/pom.xml core/
+COPY web-tests/pom.xml web-tests/
+
+# Download dependencies (cached layer)
+RUN mvn dependency:go-offline -pl core,web-tests -am -q
+
+# Copy source
+COPY core/src core/src
+COPY web-tests/src web-tests/src
+
+# Run tests
+FROM builder AS test-runner
+
+ARG BROWSER=chrome
+ARG TAGS=@smoke
+ARG GRID_URL=http://selenium-hub:4444/wd/hub
+ARG ENV=staging
+
+CMD mvn test -pl web-tests \
+    -Dbrowser=${BROWSER} \
+    -Dcucumber.filter.tags="${TAGS}" \
+    -Dgrid.url=${GRID_URL} \
+    -Denv=${ENV} \
+    --no-transfer-progress
