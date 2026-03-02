@@ -36,17 +36,14 @@ public class ApiBaseSpec {
 
     static {
         RestAssured.baseURI = config.getApiBaseUrl();
-        RestAssured.useRelaxedHTTPSValidation();
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
 
         requestSpec = new RequestSpecBuilder()
                 .setBaseUri(config.getApiBaseUrl())
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
-                .setRelaxedHTTPSValidation()
                 .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                 .addHeader("Accept-Language", "en-US,en;q=0.9")
-                .addHeader("Referer", config.getApiBaseUrl())
                 .addFilter(new AllureRestAssured())
                 .addFilter(new io.restassured.filter.log.RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new io.restassured.filter.log.ResponseLoggingFilter(LogDetail.ALL))

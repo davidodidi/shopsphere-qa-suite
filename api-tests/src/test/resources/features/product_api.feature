@@ -27,23 +27,23 @@ Feature: Product API - HTTP Protocol Validation
 
   @api
   Scenario: GET product by invalid ID returns HTTP 404
-    When I send a GET request to "/products/99999999"
+    When I send a GET request to "/products/0"
     Then the response status code should be 404
 
   @api
-  Scenario: POST create product returns HTTP 200
+  Scenario: POST create product returns HTTP 201
     Given I am authenticated as admin
-    When I send a POST request to "/products" with body:
+    When I send a POST request to "/products/add" with body:
       """
       {
         "title": "Test Product - Automation",
         "price": 29.99,
-        "category": "electronics",
+        "category": "laptops",
         "description": "Automation test product",
-        "image": "https://fakestoreapi.in/img/test.jpg"
+        "thumbnail": "https://dummyjson.com/icon/test/128"
       }
       """
-    Then the response status code should be 200
+    Then the response status code should be 201
     And the response should contain field "id"
     And the response should contain field "title"
 

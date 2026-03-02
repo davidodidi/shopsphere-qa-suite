@@ -77,9 +77,9 @@ public class ApiSteps extends ApiBaseSpec {
         Map<String, Object> body = Map.of(
                 "title", "Updated Product",
                 "price", 49.99,
-                "category", "electronics",
+                "category", "laptops",
                 "description", "Updated via automation",
-                "image", "https://fakestoreapi.in/img/updated.jpg"
+                "thumbnail", "https://dummyjson.com/icon/updated/128"
         );
         response = givenAuth(authToken).body(body).when().put(endpoint).then().extract().response();
     }
@@ -117,9 +117,12 @@ public class ApiSteps extends ApiBaseSpec {
     @Then("the response body should be a non-empty array")
     public void theResponseBodyShouldBeNonEmptyArray() {
         String body = response.asString();
-        Assert.assertTrue(body.startsWith("[") || body.contains("\"data\""),
-                "Response should be an array or contain data array");
-        Assert.assertFalse(body.equals("[]"), "Response array should not be empty");
+        // dummyjson wraps arrays: {"products":[...]} or {"users":[...]}
+        // also handle bare arrays just in case
+        Assert.assertTrue(
+                body.contains("\"id\"") && (body.startsWith("[") || body.contains(":[")),
+                "Response should contain a non-empty array. Got: " + body
+        );
     }
 
     @Then("the response body should be empty")

@@ -28,8 +28,8 @@ Feature: User Service API Validation
     When I send a POST request to "/auth/login" with body:
       """
       {
-        "username": "mor_2314",
-        "password": "83r5^_"
+        "username": "emilys",
+        "password": "emilyspass"
       }
       """
     Then the response status code should be 200
@@ -43,11 +43,11 @@ Feature: User Service API Validation
 
   @api
   Scenario: GET users in ascending sort order
-    When I send a GET request to "/users?sort=asc"
+    When I send a GET request to "/users?sortBy=id&order=asc"
     Then the response status code should be 200
     And the response body should be a non-empty array
 
   @api
   Scenario: GET user by invalid ID returns HTTP 404
-    When I send a GET request to "/users/99999999"
+    When I send a GET request to "/users/0"
     Then the response status code should be 404
