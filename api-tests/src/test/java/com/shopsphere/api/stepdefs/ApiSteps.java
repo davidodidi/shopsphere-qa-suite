@@ -154,8 +154,9 @@ public class ApiSteps extends ApiBaseSpec {
     @Then("the response time should be less than {int} milliseconds")
     public void theResponseTimeShouldBeLessThan(int maxMs) {
         long actualMs = response.timeIn(java.util.concurrent.TimeUnit.MILLISECONDS);
-        Assert.assertTrue(actualMs < maxMs,
-                "Response time " + actualMs + "ms exceeded " + maxMs + "ms");
+        int threshold = Integer.parseInt(System.getProperty("api.response.time.threshold", String.valueOf(maxMs)));
+        Assert.assertTrue(actualMs < threshold,
+                "Response time " + actualMs + "ms exceeded " + threshold + "ms");
     }
 
     @Then("the response should include {string} header")

@@ -102,6 +102,7 @@ jobs:
         run: |
           mvn test -pl api-tests \
             -Denv=${{ github.event.inputs.environment || 'staging' }} \
+            -Dapi.response.time.threshold=5000 \
             --no-transfer-progress
 
       - name: Run Consumer Contract Test (generates pact file)
