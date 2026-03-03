@@ -15,10 +15,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java 11
+      - name: Set up Java 17 (required for Android SDK Manager)
         uses: actions/setup-java@v4
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
           cache: maven
 
@@ -41,11 +41,6 @@ jobs:
           sudo apt-get install -y cpu-checker
           kvm-ok
 
-      - name: Build and install parent + core modules
-        run: |
-          mvn install -N -DskipTests --no-transfer-progress
-          mvn install -pl core -DskipTests --no-transfer-progress
-
       - name: Start Appium server in background
         run: |
           appium --log appium.log &
@@ -64,7 +59,12 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           disable-animations: true
           script: |
-            echo "Emulator is ready — running mobile tests"
+            echo "Emulator is ready — switching to Java 11 for Maven build"
+            export JAVA_HOME="${JAVA_HOME_11_X64}"
+            export PATH="${JAVA_HOME}/bin:${PATH}"
+            java -version
+
+            echo "Running mobile tests"
             mvn test -pl mobile-tests \
               -Dplatform=android \
               -Dappium.server=http://127.0.0.1:4723 \
