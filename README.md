@@ -8,7 +8,7 @@
 [![Regression Suite](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/regression-suite.yml/badge.svg)](https://github.com/davidodidi/shopsphere-qa-suite/actions)
 [![Java](https://img.shields.io/badge/Java-11-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Selenium](https://img.shields.io/badge/Selenium-4.15-43B02A?logo=selenium&logoColor=white)](https://www.selenium.dev/)
-[![Appium](https://img.shields.io/badge/Appium-8.6-662D8C?logo=appium&logoColor=white)](http://appium.io/)
+[![Appium](https://img.shields.io/badge/Appium-3.2.0-662D8C?logo=appium&logoColor=white)](http://appium.io/)
 [![Cucumber](https://img.shields.io/badge/Cucumber-7.14-23D96C?logo=cucumber&logoColor=white)](https://cucumber.io/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -26,7 +26,7 @@
 | Skill Area | Technologies |
 |---|---|
 | **Web UI Automation** | Selenium WebDriver 4, Page Object Model, Page Factory (`@FindBy`) |
-| **Mobile Automation** | Appium 8, `@AndroidFindBy`, `@iOSXCUITFindBy`, Android + iOS |
+| **Mobile Automation** | Appium 3, `@AndroidFindBy`, `@iOSXCUITFindBy`, Android + iOS |
 | **API Testing** | RestAssured, GET/POST/PUT/PATCH/DELETE/HEAD/OPTIONS coverage |
 | **BDD** | Cucumber 7, Gherkin feature files, shared across web + mobile |
 | **TDD** | JUnit 5 — core utilities written test-first |
@@ -192,7 +192,7 @@ shopsphere-qa-suite/
 ├── .github/workflows/
 │   ├── smoke-tests.yml                      ← Every PR: web smoke + API smoke (parallel)
 │   ├── regression-suite.yml                 ← Nightly: unit→API→web (matrix)→E2E→Allure Pages
-│   ├── api-contract-tests.yml               ← On API changes: Pact consumer + provider
+│   ├── api-contract-tests.yml               ← On API changes: Pact consumer + artifact upload
 │   └── performance-tests.yml                ← Weekly Sunday: JMeter smoke load
 │
 ├── Jenkinsfile                              ← Declarative pipeline with all stages
@@ -204,6 +204,7 @@ shopsphere-qa-suite/
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Java 11+
 - Maven 3.8+
 - Docker Desktop (for Selenium Grid)
@@ -249,8 +250,15 @@ mvn test -pl api-tests -Dcucumber.filter.tags="@api"
 # Contract Tests (Pact)
 mvn test -pl api-tests -Dtest="ProductConsumerContractTest"
 
-# Mobile Tests (requires Appium server + emulator)
-mvn test -pl mobile-tests -Dcucumber.filter.tags="@smoke and @mobile" -Dplatform=android
+# Mobile Tests (requires Appium server + Android emulator — see Mobile Setup below)
+mvn test -pl mobile-tests \
+  -Dplatform=android \
+  -Dappium.server=http://127.0.0.1:4723 \
+  -Dcucumber.filter.tags="@mobile" \
+  --no-transfer-progress
+
+# Full Suite
+mvn test --no-transfer-progress
 
 # Performance Tests (requires JMeter)
 jmeter -n -t performance/test-plans/smoke-load.jmx \
@@ -276,6 +284,87 @@ docker run -e TAGS="@smoke" -e GRID_URL="http://selenium-hub:4444/wd/hub" \
 docker build -f docker/Dockerfile.api-tests -t shopsphere-api-tests .
 docker run -e TAGS="@api" shopsphere-api-tests
 ```
+
+---
+
+## 📱 Mobile Test Local Setup
+
+Mobile tests run locally against an Android emulator via Appium. The following steps are required before executing the mobile test suite.
+
+### Prerequisites
+
+| Tool | Version | Notes |
+|------|---------|-------|
+| Node.js | 20+ | Required to run Appium |
+| Appium | 3.2.0 | Install globally via npm |
+| UIAutomator2 driver | latest | Appium driver for Android |
+| Android Studio | latest | Provides emulator + SDK |
+| Android SDK | API 35 (Android 16) | Install via SDK Manager in Android Studio |
+| ADB | included with SDK | Must be on PATH |
+
+### Step 1 — Install Appium and UIAutomator2 driver
+
+```bash
+npm install -g appium
+appium driver install uiautomator2
+```
+
+> ⚠️ **Appium 3.x breaking change:** The `/wd/hub` suffix has been removed. The correct server URL is `http://127.0.0.1:4723` — not `http://127.0.0.1:4723/wd/hub`.
+
+### Step 2 — Set environment variables
+
+```bash
+# Windows (set in System Environment Variables or your shell profile)
+ANDROID_HOME=C:\Users\<YourUsername>\AppData\Local\Android\Sdk
+
+# Add to PATH:
+%ANDROID_HOME%\platform-tools
+%ANDROID_HOME%\emulator
+```
+
+### Step 3 — Start the Android emulator
+
+Open **Android Studio → Device Manager** and start the **Pixel 6, API 35 (Android 16)** emulator. Confirm it is detected by ADB:
+
+```bash
+adb devices
+# Expected output:
+# List of devices attached
+# emulator-5554   device
+```
+
+### Step 4 — Configure the APK path
+
+In `mobile-tests/src/main/java/com/shopsphere/config/AppiumDriverManager.java`, the `app` capability must point to the absolute path of the SauceLabs APK on your machine:
+
+```java
+capabilities.setCapability("app", "C:/Users/<YourUsername>/path/to/Android.SauceLabs.Mobile.Sample.app.x.x.x.apk");
+```
+
+### Step 5 — Start Appium server
+
+```bash
+appium
+# Server starts at http://127.0.0.1:4723
+```
+
+### Step 6 — Run mobile tests
+
+```bash
+mvn test -pl mobile-tests \
+  -Dplatform=android \
+  -Dappium.server=http://127.0.0.1:4723 \
+  -Dcucumber.filter.tags="@mobile" \
+  --no-transfer-progress
+```
+
+### Test isolation note
+
+`AppiumDriverManager` sets `noReset: false`, which ensures the app is fully reset to the login screen between test sessions. This prevents scenarios from inheriting stale state from a previous run.
+
+### Debugging with Appium Inspector
+
+[Appium Inspector](https://github.com/appium/appium-inspector) is a GUI tool for inspecting the app's element tree and building locators. Connect it to `http://127.0.0.1:4723` with the same capabilities used in `AppiumDriverManager.java` to inspect elements interactively without running a full test.
 
 ---
 
@@ -360,6 +449,8 @@ Four test plans covering the full performance testing spectrum:
 | `soak-test.jmx` | 50 | 60 min | Memory stability, no resource leaks |
 | `spike-test.jmx` | 0→200 | 30s ramp | Handle sudden traffic spikes |
 | `stress-test.jmx` | 10→300 | Staged | Find the breaking point |
+
+**Latest smoke-load results:** 178 samples · 0% error rate · p95 107ms
 
 Results are validated automatically by `performance/scripts/check_results.py`:
 - Max error rate: 1.0%
@@ -456,7 +547,7 @@ docker compose -f docker/docker-compose.yml up -d
 | Build | Maven (multi-module) | 3.9 |
 | Web Automation | Selenium WebDriver | 4.15.0 |
 | Driver Management | WebDriverManager | 5.6.3 |
-| Mobile Automation | Appium | 8.6.0 |
+| Mobile Automation | Appium | 3.2.0 |
 | API Testing | RestAssured | 5.3.2 |
 | BDD Framework | Cucumber | 7.14.0 |
 | Unit Testing | JUnit 5 | 5.10.0 |
