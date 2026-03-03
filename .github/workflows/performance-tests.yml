@@ -1,5 +1,4 @@
 name: ⚡ Performance Tests — JMeter
-
 on:
   schedule:
     - cron: '0 3 * * 0'   # 3 AM UTC every Sunday
@@ -13,43 +12,41 @@ on:
         default: '120'
       host:
         description: 'Target host'
-        default: 'www.saucedemo.com'
-
+        default: 'dummyjson.com'
 jobs:
   performance-smoke:
     name: ⚡ JMeter Smoke Load
     runs-on: ubuntu-latest
     timeout-minutes: 20
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Install JMeter
         run: |
           wget -q https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.2.tgz
           tar -xzf apache-jmeter-5.6.2.tgz
           echo "$(pwd)/apache-jmeter-5.6.2/bin" >> $GITHUB_PATH
-
       - name: Create results directory
         run: mkdir -p performance/results
-
       - name: Run JMeter Smoke Load Test
         run: |
           jmeter -n \
             -t performance/test-plans/smoke-load.jmx \
             -l performance/results/smoke-results.jtl \
             -e -o performance/results/smoke-html-report \
-            -Jhost=${{ github.event.inputs.host || 'www.saucedemo.com' }} \
+            -Jhost=${{ github.event.inputs.host || 'dummyjson.com' }} \
             -Jthreads=${{ github.event.inputs.threads || '10' }} \
             -Jduration=${{ github.event.inputs.duration || '120' }}
-
+      - name: Debug - Print JTL sample
+        if: always()
+        run: |
+          echo "=== First 10 lines of JTL ==="
+          head -10 performance/results/smoke-results.jtl || echo "JTL file not found"
       - name: Upload JMeter Results
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: jmeter-performance-results
           path: performance/results/
-
       - name: Check Error Rate
         run: |
           python3 performance/scripts/check_results.py \
