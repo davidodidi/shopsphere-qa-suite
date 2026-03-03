@@ -6,6 +6,7 @@
 
 [![Smoke Tests](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/smoke-tests.yml/badge.svg)](https://github.com/davidodidi/shopsphere-qa-suite/actions)
 [![Regression Suite](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/regression-suite.yml/badge.svg)](https://github.com/davidodidi/shopsphere-qa-suite/actions)
+[![Mobile Tests](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/mobile-tests.yml/badge.svg)](https://github.com/davidodidi/shopsphere-qa-suite/actions)
 [![Java](https://img.shields.io/badge/Java-11-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Selenium](https://img.shields.io/badge/Selenium-4.15-43B02A?logo=selenium&logoColor=white)](https://www.selenium.dev/)
 [![Appium](https://img.shields.io/badge/Appium-3.2.0-662D8C?logo=appium&logoColor=white)](http://appium.io/)
@@ -155,6 +156,8 @@ shopsphere-qa-suite/
 │           │   ├── stepdefs/                 ← Same Gherkin steps, Appium implementation
 │           │   └── runners/                  ← MobileSmokeRunner, MobileRegressionRunner
 │           └── resources/
+│               ├── apps/
+│               │   └── SauceLabs.apk         ← Android test app
 │               ├── features/                 ← Shared feature files from web-tests
 │               └── capabilities/
 │                   ├── android.json
@@ -193,7 +196,8 @@ shopsphere-qa-suite/
 │   ├── smoke-tests.yml                      ← Every PR: web smoke + API smoke (parallel)
 │   ├── regression-suite.yml                 ← Nightly: unit→API→web (matrix)→E2E→Allure Pages
 │   ├── api-contract-tests.yml               ← On API changes: Pact consumer + artifact upload
-│   └── performance-tests.yml                ← Weekly Sunday: JMeter smoke load
+│   ├── performance-tests.yml                ← Weekly Sunday: JMeter smoke load
+│   └── mobile-tests.yml                     ← Manual + nightly: Android emulator (Pixel 6 API 35)
 │
 ├── Jenkinsfile                              ← Declarative pipeline with all stages
 └── scripts/setup.sh                        ← One-command local setup
@@ -299,7 +303,7 @@ Mobile tests run locally against an Android emulator via Appium. The following s
 | Appium | 3.2.0 | Install globally via npm |
 | UIAutomator2 driver | latest | Appium driver for Android |
 | Android Studio | latest | Provides emulator + SDK |
-| Android SDK | API 35 (Android 16) | Install via SDK Manager in Android Studio |
+| Android SDK | API 35 (Android 15) | Install via SDK Manager in Android Studio |
 | ADB | included with SDK | Must be on PATH |
 
 ### Step 1 — Install Appium and UIAutomator2 driver
@@ -324,7 +328,7 @@ ANDROID_HOME=C:\Users\<YourUsername>\AppData\Local\Android\Sdk
 
 ### Step 3 — Start the Android emulator
 
-Open **Android Studio → Device Manager** and start the **Pixel 6, API 35 (Android 16)** emulator. Confirm it is detected by ADB:
+Open **Android Studio → Device Manager** and start the **Pixel 6, API 35 (Android 15)** emulator. Confirm it is detected by ADB:
 
 ```bash
 adb devices
@@ -487,6 +491,7 @@ login.feature (shared)
 | `regression-suite.yml` | Nightly 2AM UTC Mon-Fri | Unit → API → Web (matrix: Chrome/Firefox) → E2E → Allure Pages |
 | `api-contract-tests.yml` | On API file changes | Pact consumer + artifact upload |
 | `performance-tests.yml` | Weekly Sunday 3AM UTC | JMeter smoke load + threshold check |
+| `mobile-tests.yml` | Manual + Nightly 3AM UTC Mon-Fri | Android emulator (Pixel 6 API 35) + Allure upload |
 
 ### Jenkins Declarative Pipeline
 
