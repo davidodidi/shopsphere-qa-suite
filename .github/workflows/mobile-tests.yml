@@ -72,7 +72,7 @@ jobs:
           avd-name: Pixel_6_API_35
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           disable-animations: true
-          script: mvn test -pl mobile-tests -Dplatform=android -Dappium.server=http://127.0.0.1:4723 -Dapp.path="${GITHUB_WORKSPACE}/mobile-tests/src/test/resources/apps/SauceLabs.apk" -Ddevice.name="Pixel_6_API_35" -Dplatform.version="16" -Dcucumber.filter.tags="@mobile" --no-transfer-progress
+          script: mvn test -pl mobile-tests -Dplatform=android -Dappium.server=http://127.0.0.1:4723 -Dapp.path="${GITHUB_WORKSPACE}/mobile-tests/src/test/resources/apps/SauceLabs.apk" -Ddevice.name="Pixel_6_API_35" -Dplatform.version="15" -Dcucumber.filter.tags="@mobile" --no-transfer-progress
 
       - name: Upload Appium logs on failure
         uses: actions/upload-artifact@v4
