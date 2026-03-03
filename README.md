@@ -485,5 +485,6 @@ Java • Selenium • Playwright • Cypress • RestAssured • Python • CI/C
 <div align="center">
 
 *Built to demonstrate full-stack QA automation capability for SDET and QA Automation Engineer roles*
+This project is tested with BrowserStack
 
 </div>
