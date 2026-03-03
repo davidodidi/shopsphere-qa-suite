@@ -19,6 +19,12 @@
         <dependency><groupId>io.github.bonigarcia</groupId><artifactId>webdrivermanager</artifactId></dependency>
         <dependency><groupId>io.cucumber</groupId><artifactId>cucumber-java</artifactId></dependency>
         <dependency><groupId>io.cucumber</groupId><artifactId>cucumber-testng</artifactId></dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-picocontainer</artifactId>
+            <version>7.14.0</version>
+            <scope>test</scope>
+        </dependency>
         <dependency><groupId>org.testng</groupId><artifactId>testng</artifactId></dependency>
         <dependency><groupId>io.qameta.allure</groupId><artifactId>allure-cucumber7-jvm</artifactId></dependency>
         <dependency><groupId>io.qameta.allure</groupId><artifactId>allure-testng</artifactId></dependency>
