@@ -22,7 +22,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Set up Java 11 (for Maven build)
+      - name: Set up Java 11 (for Maven build — sets JAVA_HOME_11_X64)
         uses: actions/setup-java@v4
         with:
           java-version: '11'
@@ -58,6 +58,9 @@ jobs:
           echo "Waiting for Appium to be ready..."
           timeout 30 bash -c 'until curl -s http://127.0.0.1:4723/status > /dev/null; do sleep 2; done'
           echo "Appium is ready"
+
+      - name: Switch JAVA_HOME to 17 for Android SDK Manager
+        run: echo "JAVA_HOME=${JAVA_HOME_17_X64}" >> $GITHUB_ENV
 
       - name: Run mobile tests on Android emulator
         uses: reactivecircus/android-emulator-runner@v2
