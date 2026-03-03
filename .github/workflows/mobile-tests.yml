@@ -1,9 +1,9 @@
 name: 📱 Mobile Tests — Android Emulator
 
 on:
-  workflow_dispatch:  # Manual trigger only — emulator jobs are slow and resource-heavy
+  workflow_dispatch:
   schedule:
-    - cron: '0 3 * * 1-5'  # 3 AM UTC Mon-Fri (runs after regression suite)
+    - cron: '0 3 * * 1-5'
 
 jobs:
   mobile-android:
@@ -21,6 +21,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
+
+      - name: Set up Java 11 (for Maven build)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
 
       - name: Set up Node.js (required for Appium)
         uses: actions/setup-node@v4
@@ -41,6 +47,11 @@ jobs:
           sudo apt-get install -y cpu-checker
           kvm-ok
 
+      - name: Build and install parent + core modules
+        run: |
+          mvn install -N -DskipTests --no-transfer-progress
+          mvn install -pl core -DskipTests --no-transfer-progress
+
       - name: Start Appium server in background
         run: |
           appium --log appium.log &
@@ -58,21 +69,7 @@ jobs:
           avd-name: Pixel_6_API_35
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           disable-animations: true
-          script: |
-            echo "Emulator is ready — switching to Java 11 for Maven build"
-            export JAVA_HOME="${JAVA_HOME_11_X64}"
-            export PATH="${JAVA_HOME}/bin:${PATH}"
-            java -version
-
-            echo "Running mobile tests"
-            mvn test -pl mobile-tests \
-              -Dplatform=android \
-              -Dappium.server=http://127.0.0.1:4723 \
-              -Dapp.path="${GITHUB_WORKSPACE}/mobile-tests/src/test/resources/apps/SauceLabs.apk" \
-              -Ddevice.name="Pixel_6_API_35" \
-              -Dplatform.version="16" \
-              -Dcucumber.filter.tags="@mobile" \
-              --no-transfer-progress
+          script: mvn test -pl mobile-tests -Dplatform=android -Dappium.server=http://127.0.0.1:4723 -Dapp.path="${GITHUB_WORKSPACE}/mobile-tests/src/test/resources/apps/SauceLabs.apk" -Ddevice.name="Pixel_6_API_35" -Dplatform.version="16" -Dcucumber.filter.tags="@mobile" --no-transfer-progress
 
       - name: Upload Appium logs on failure
         uses: actions/upload-artifact@v4
