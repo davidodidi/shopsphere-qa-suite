@@ -1,5 +1,4 @@
 package com.shopsphere.mobile.hooks;
-
 import com.shopsphere.config.AppiumDriverManager;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -14,6 +13,7 @@ public class MobileHooks {
     @Before
     public void setUp(Scenario scenario) {
         log.info("=== Mobile Scenario Starting: {} ===", scenario.getName());
+        // noReset=false in AppiumDriverManager ensures app launches fresh on login screen
         AppiumDriverManager.initDriver();
     }
 
