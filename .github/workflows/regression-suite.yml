@@ -55,7 +55,7 @@ jobs:
           cache: maven
 
       - name: Build and install core module
-        run: mvn install -DskipTests --no-transfer-progress
+        run: mvn clean install -DskipTests --no-transfer-progress
 
       - name: Start Selenium Grid
         run: |
@@ -64,7 +64,7 @@ jobs:
 
       - name: Run Web Regression - ${{ matrix.browser }}
         run: |
-          mvn test -pl web-tests \
+          mvn clean test -pl web-tests \
             -Dcucumber.filter.tags="${{ github.event.inputs.tags || '@regression' }}" \
             -Dbrowser=${{ matrix.browser }} \
             -Dgrid.url=http://localhost:4444/wd/hub \
@@ -146,7 +146,7 @@ jobs:
           cache: maven
 
       - name: Build and install core module
-        run: mvn install -DskipTests --no-transfer-progress
+        run: mvn clean install -DskipTests --no-transfer-progress
 
       - name: Start Selenium Grid
         run: |
@@ -155,7 +155,7 @@ jobs:
 
       - name: Run E2E Tests
         run: |
-          mvn test -pl web-tests \
+          mvn clean test -pl web-tests \
             -Dcucumber.filter.tags="@e2e" \
             -Dgrid.url=http://localhost:4444/wd/hub \
             -Denv=${{ github.event.inputs.environment || 'staging' }} \
