@@ -2,6 +2,7 @@ package com.shopsphere.pages;
 
 import com.shopsphere.utils.WaitUtils;
 import io.qameta.allure.Step;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
@@ -37,29 +38,38 @@ public class CheckoutPage extends BasePage {
 
     @Step("Filling checkout info: {firstName} {lastName} {postalCode}")
     public CheckoutPage fillCheckoutInfo(String firstName, String lastName, String postalCode) {
-        // React 17 controlled inputs require real key events to update fiber state.
-        // JavaScript-based approaches (nativeInputValueSetter + InputEvent) work in a
-        // real browser console but React's headless Chrome event handling on Linux
-        // accepts the DOM value change without updating internal state, leaving the
-        // form logically empty at submit time.
-        // Actions.sendKeys fires genuine OS-level keyboard events (keydown, keypress,
-        // keyup) for each character, which React's synthetic event system treats
-        // identically to real user typing. This is the same mechanism that makes
-        // sendKeys work in GitHub Actions.
-        // We click the field first via Actions to ensure focus is set before typing,
-        // then type the value character by character via the Actions chain.
-        log.info("Filling checkout form: '{} {} {}'", firstName, lastName, postalCode);
+        log.info("DEBUG fillCheckoutInfo called: '{} {} {}'", firstName, lastName, postalCode);
 
         typeIntoField(firstNameField, firstName);
         typeIntoField(lastNameField, lastName);
         typeIntoField(postalCodeField, postalCode);
+
+        // Read back values via JavaScript to confirm what is actually in the DOM
+        // and what React's internal fiber state thinks the value is.
+        String fn = jsGetValue("first-name");
+        String ln = jsGetValue("last-name");
+        String zip = jsGetValue("postal-code");
+        log.info("DEBUG DOM values after typeIntoField — first:'{}' last:'{}' zip:'{}'", fn, ln, zip);
+
+        // Also check React's internal state directly from the fiber node
+        String fnReact = jsGetReactValue("first-name");
+        String lnReact = jsGetReactValue("last-name");
+        String zipReact = jsGetReactValue("postal-code");
+        log.info("DEBUG React fiber values after typeIntoField — first:'{}' last:'{}' zip:'{}'", fnReact, lnReact, zipReact);
 
         return this;
     }
 
     @Step("Clicking continue")
     public CheckoutPage clickContinue() {
+        // Log field values one more time immediately before the click
+        String fn = jsGetValue("first-name");
+        String ln = jsGetValue("last-name");
+        String zip = jsGetValue("postal-code");
+        log.info("DEBUG values immediately before continue click — first:'{}' last:'{}' zip:'{}'", fn, ln, zip);
+
         WaitUtils.waitForClickable(continueButton).click();
+        log.info("DEBUG continue button clicked — waiting for checkout-step-two");
         WaitUtils.waitForUrlToContain("checkout-step-two");
         return this;
     }
@@ -95,25 +105,47 @@ public class CheckoutPage extends BasePage {
         return driver.getCurrentUrl().contains("checkout");
     }
 
-    /**
-     * Types a value into a React 17 controlled input using Actions.
-     *
-     * Actions.click() focuses the field, then Actions.sendKeys() fires real
-     * OS-level key events (keydown, keypress, input, keyup) per character.
-     * These events are indistinguishable from real user typing and correctly
-     * update React's fiber state in all environments including headless Chrome
-     * on Linux (Jenkins/Docker).
-     *
-     * This replaces the JavaScript nativeInputValueSetter + InputEvent approach
-     * which, despite working in a real browser console, fails in headless Chrome
-     * on Linux because React's event delegation handles synthetic dispatched
-     * events differently from real keyboard input in that environment.
-     */
     private void typeIntoField(WebElement field, String value) {
         WaitUtils.waitForClickable(field);
         new Actions(driver)
             .click(field)
             .sendKeys(value)
             .perform();
+    }
+
+    /** Reads the DOM .value property of an input by its id. */
+    private String jsGetValue(String id) {
+        try {
+            Object result = ((JavascriptExecutor) driver)
+                .executeScript("var el = document.getElementById(arguments[0]); return el ? el.value : 'ELEMENT_NOT_FOUND';", id);
+            return result != null ? result.toString() : "null";
+        } catch (Exception e) {
+            return "ERROR: " + e.getMessage();
+        }
+    }
+
+    /**
+     * Reads React's internal fiber state for an input by its id.
+     * React 17 stores the current value in the fiber node under
+     * __reactFiber or __reactInternalInstance keys.
+     */
+    private String jsGetReactValue(String id) {
+        try {
+            Object result = ((JavascriptExecutor) driver).executeScript(
+                "var el = document.getElementById(arguments[0]);" +
+                "if (!el) return 'ELEMENT_NOT_FOUND';" +
+                "var fiberKey = Object.keys(el).find(k => k.startsWith('__reactFiber') || k.startsWith('__reactInternalInstance'));" +
+                "if (!fiberKey) return 'NO_FIBER_KEY';" +
+                "var fiber = el[fiberKey];" +
+                "if (!fiber) return 'NO_FIBER';" +
+                "var memoized = fiber.memoizedProps;" +
+                "if (!memoized) return 'NO_MEMOIZED_PROPS';" +
+                "return memoized.value !== undefined ? String(memoized.value) : 'NO_VALUE_PROP';",
+                id
+            );
+            return result != null ? result.toString() : "null";
+        } catch (Exception e) {
+            return "ERROR: " + e.getMessage();
+        }
     }
 }
