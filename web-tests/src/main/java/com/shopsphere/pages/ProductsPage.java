@@ -6,6 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ProductsPage extends BasePage {
@@ -47,11 +48,15 @@ public class ProductsPage extends BasePage {
     @Step("Adding product '{productName}' to cart")
     public ProductsPage addProductToCart(String productName) {
         log.info("Adding product to cart: {}", productName);
-        productItems.stream()
+        Optional<WebElement> match = productItems.stream()
                 .filter(item -> item.findElement(By.cssSelector(".inventory_item_name"))
                         .getText().equals(productName))
-                .findFirst()
-                .ifPresent(item -> item.findElement(By.cssSelector("button")).click());
+                .findFirst();
+        match.ifPresent(item -> {
+            WebElement button = item.findElement(By.cssSelector("button"));
+            scrollToElement(button);
+            jsClick(button);
+        });
         return this;
     }
 
@@ -63,18 +68,23 @@ public class ProductsPage extends BasePage {
 
     @Step("Clicking on product: {productName}")
     public ProductDetailPage clickProduct(String productName) {
-        productItems.stream()
+        Optional<WebElement> match = productItems.stream()
                 .filter(item -> item.findElement(By.cssSelector(".inventory_item_name"))
                         .getText().equals(productName))
-                .findFirst()
-                .ifPresent(item -> item.findElement(By.cssSelector(".inventory_item_name")).click());
+                .findFirst();
+        match.ifPresent(item -> {
+            WebElement link = item.findElement(By.cssSelector(".inventory_item_name"));
+            scrollToElement(link);
+            jsClick(link);
+        });
         WaitUtils.waitForUrlToContain("inventory-item");
         return new ProductDetailPage();
     }
 
     @Step("Navigating to cart")
     public CartPage goToCart() {
-        click(cartIcon);
+        scrollToElement(cartIcon);
+        jsClick(cartIcon);
         WaitUtils.waitForUrlToContain("cart");
         return new CartPage();
     }

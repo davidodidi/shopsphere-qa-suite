@@ -1,13 +1,10 @@
 package com.shopsphere.pages;
 
+import com.shopsphere.utils.WaitUtils;
 import io.qameta.allure.Step;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/**
- * LoginPage - Page Object using Page Factory (@FindBy annotations).
- * Targets SauceDemo login page (https://www.saucedemo.com).
- */
 public class LoginPage extends BasePage {
 
     @FindBy(id = "user-name")
@@ -47,6 +44,7 @@ public class LoginPage extends BasePage {
     public ProductsPage clickLogin() {
         log.info("Clicking login button");
         click(loginButton);
+        WaitUtils.waitForUrlToContain("inventory");
         return new ProductsPage();
     }
 
