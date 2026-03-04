@@ -14,6 +14,7 @@ pipeline {
         MAVEN_HOME   = tool 'Maven-3.9'
         PATH         = "${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${env.PATH}"
         ALLURE_HOME  = tool 'Allure-2.24'
+        GRID_URL     = 'http://localhost:4444/wd/hub'
     }
 
     options {
@@ -85,15 +86,23 @@ pipeline {
                     when { expression { params.TAGS == '@smoke' || params.TAGS == '@regression' } }
                     steps {
                         sh """
+                            docker compose -f docker/docker-compose.yml up -d selenium-hub chrome-node-1
+                            timeout 90 bash -c 'until curl -s http://localhost:4444/wd/hub/status | grep "\\"ready\\": true" > /dev/null; do sleep 3; done'
+                            echo "Selenium Grid is ready"
+                        """
+                        sh """
                             mvn test -pl web-tests \
                                 -Dcucumber.filter.tags="@smoke" \
+                                -DsuiteXmlFile=src/test/resources/testng-smoke.xml \
                                 -Dbrowser=${params.BROWSER} \
+                                -Dgrid.url=${GRID_URL} \
                                 -Denv=${params.ENV} \
                                 --no-transfer-progress
                         """
                     }
                     post {
                         always {
+                            sh 'docker compose -f docker/docker-compose.yml down || true'
                             junit allowEmptyResults: true, testResults: 'web-tests/target/surefire-reports/*.xml'
                         }
                     }
@@ -102,15 +111,23 @@ pipeline {
                     when { expression { params.TAGS == '@sanity' || params.TAGS == '@regression' } }
                     steps {
                         sh """
+                            docker compose -f docker/docker-compose.yml up -d selenium-hub chrome-node-1
+                            timeout 90 bash -c 'until curl -s http://localhost:4444/wd/hub/status | grep "\\"ready\\": true" > /dev/null; do sleep 3; done'
+                            echo "Selenium Grid is ready"
+                        """
+                        sh """
                             mvn test -pl web-tests \
                                 -Dcucumber.filter.tags="@sanity" \
+                                -DsuiteXmlFile=src/test/resources/testng-regression.xml \
                                 -Dbrowser=${params.BROWSER} \
+                                -Dgrid.url=${GRID_URL} \
                                 -Denv=${params.ENV} \
                                 --no-transfer-progress
                         """
                     }
                     post {
                         always {
+                            sh 'docker compose -f docker/docker-compose.yml down || true'
                             junit allowEmptyResults: true, testResults: 'web-tests/target/surefire-reports/*.xml'
                         }
                     }
@@ -127,15 +144,23 @@ pipeline {
             }
             steps {
                 sh """
+                    docker compose -f docker/docker-compose.yml up -d selenium-hub chrome-node-1
+                    timeout 90 bash -c 'until curl -s http://localhost:4444/wd/hub/status | grep "\\"ready\\": true" > /dev/null; do sleep 3; done'
+                    echo "Selenium Grid is ready"
+                """
+                sh """
                     mvn test -pl web-tests \
                         -Dcucumber.filter.tags="@e2e" \
+                        -DsuiteXmlFile=src/test/resources/testng-regression.xml \
                         -Dbrowser=${params.BROWSER} \
+                        -Dgrid.url=${GRID_URL} \
                         -Denv=${params.ENV} \
                         --no-transfer-progress
                 """
             }
             post {
                 always {
+                    sh 'docker compose -f docker/docker-compose.yml down || true'
                     junit allowEmptyResults: true, testResults: 'web-tests/target/surefire-reports/*.xml'
                 }
             }
@@ -145,15 +170,23 @@ pipeline {
             when { expression { params.TAGS == '@uat' || params.TAGS == '@regression' } }
             steps {
                 sh """
+                    docker compose -f docker/docker-compose.yml up -d selenium-hub chrome-node-1
+                    timeout 90 bash -c 'until curl -s http://localhost:4444/wd/hub/status | grep "\\"ready\\": true" > /dev/null; do sleep 3; done'
+                    echo "Selenium Grid is ready"
+                """
+                sh """
                     mvn test -pl web-tests \
                         -Dcucumber.filter.tags="@uat" \
+                        -DsuiteXmlFile=src/test/resources/testng-regression.xml \
                         -Dbrowser=${params.BROWSER} \
+                        -Dgrid.url=${GRID_URL} \
                         -Denv=${params.ENV} \
                         --no-transfer-progress
                 """
             }
             post {
                 always {
+                    sh 'docker compose -f docker/docker-compose.yml down || true'
                     junit allowEmptyResults: true, testResults: 'web-tests/target/surefire-reports/*.xml'
                 }
             }
