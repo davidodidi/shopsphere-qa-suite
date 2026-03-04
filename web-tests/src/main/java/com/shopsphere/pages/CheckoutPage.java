@@ -33,38 +33,37 @@ public class CheckoutPage extends BasePage {
 
     @Step("Filling checkout info: {firstName} {lastName} {postalCode}")
     public CheckoutPage fillCheckoutInfo(String firstName, String lastName, String postalCode) {
-        type(firstNameField, firstName);
-        type(lastNameField, lastName);
-        type(postalCodeField, postalCode);
+        // sendKeys after clear() can fail to commit values in headless Chrome under
+        // parallel load — the proxy reference can go stale between clear() and sendKeys().
+        // Setting value via JS is atomic and guaranteed to reach the DOM.
+        jsSetValue(firstNameField, firstName);
+        jsSetValue(lastNameField, lastName);
+        jsSetValue(postalCodeField, postalCode);
         return this;
     }
 
     @Step("Clicking continue")
     public CheckoutPage clickContinue() {
-        // #continue is <input type="submit"> inside a <form>.
-        // jsClick(element) fires a DOM click event but headless Chrome does NOT
-        // propagate that into a form submission — the URL never changes.
-        // We must invoke form.submit() directly via JavaScript.
-        WaitUtils.waitForVisibility(continueButton);
-        ((JavascriptExecutor) driver).executeScript(
-            "arguments[0].closest('form').submit();", continueButton);
+        // Wait for the continue button to confirm we are on step-one,
+        // then do a real WebDriver click — this triggers both the click event
+        // and form validation in the browser's native event loop.
+        // form.submit() bypasses validation and submits before JS sets values.
+        // jsClick() fires a DOM event but doesn't trigger form submission in headless.
+        // A real waitForClickable().click() is correct here because the fields
+        // are already populated via jsSetValue(), so there is nothing to race.
+        WaitUtils.waitForClickable(continueButton).click();
         WaitUtils.waitForUrlToContain("checkout-step-two");
         return this;
     }
 
     @Step("Clicking continue expecting validation error")
     public CheckoutPage clickContinueExpectingError() {
-        // For the empty-fields validation scenario we use jsClick so the browser
-        // stays on the page and SauceDemo's own error message is shown.
-        scrollToElement(continueButton);
-        jsClick(continueButton);
+        WaitUtils.waitForClickable(continueButton).click();
         return this;
     }
 
     @Step("Finishing order")
     public CheckoutPage finishOrder() {
-        // #finish is also a button but it is NOT a form submit input on step-two —
-        // it is a regular <button> / anchor, so jsClick is correct here.
         scrollToElement(finishButton);
         jsClick(finishButton);
         WaitUtils.waitForUrlToContain("checkout-complete");
@@ -86,5 +85,21 @@ public class CheckoutPage extends BasePage {
     @Override
     public boolean isLoaded() {
         return driver.getCurrentUrl().contains("checkout");
+    }
+
+    /**
+     * Sets an input field's value via JavaScript and dispatches an 'input' event
+     * so the page's own JS (React, etc.) registers the change.
+     * This is more reliable than sendKeys in headless CI because it is atomic —
+     * there is no gap between clear() and sendKeys() where the proxy can go stale.
+     */
+    private void jsSetValue(WebElement field, String value) {
+        WaitUtils.waitForVisibility(field);
+        ((JavascriptExecutor) driver).executeScript(
+            "arguments[0].value = arguments[1];" +
+            "arguments[0].dispatchEvent(new Event('input', { bubbles: true }));" +
+            "arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
+            field, value
+        );
     }
 }
