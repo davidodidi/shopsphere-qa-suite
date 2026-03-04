@@ -38,3 +38,4 @@ src/test/resources/apps/*.app
 # OS
 .DS_Store
 Thumbs.db
+logs/
