@@ -1,5 +1,6 @@
 package com.shopsphere.pages;
 
+import com.shopsphere.utils.WaitUtils;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -22,7 +23,9 @@ public class CartPage extends BasePage {
 
     @Step("Proceeding to checkout")
     public CheckoutPage proceedToCheckout() {
-        click(checkoutButton);
+        scrollToElement(checkoutButton);
+        jsClick(checkoutButton);
+        WaitUtils.waitForUrlToContain("checkout-step-one");
         return new CheckoutPage();
     }
 
@@ -40,7 +43,11 @@ public class CartPage extends BasePage {
                 .filter(item -> item.findElement(By.cssSelector(".inventory_item_name"))
                         .getText().equals(itemName))
                 .findFirst()
-                .ifPresent(item -> item.findElement(By.cssSelector("button")).click());
+                .ifPresent(item -> {
+                    WebElement button = item.findElement(By.cssSelector("button"));
+                    scrollToElement(button);
+                    jsClick(button);
+                });
         return this;
     }
 
