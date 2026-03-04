@@ -24,16 +24,15 @@ public class CartPage extends BasePage {
 
     @Step("Proceeding to checkout")
     public CheckoutPage proceedToCheckout() {
+        // Use a real WebDriver click, not jsClick. jsClick fires a JS synthetic
+        // event which bypasses the browser's trusted-user-gesture chain. In
+        // headless Chrome on Jenkins this leaves the page in a state where
+        // sendKeys() on the checkout form inputs is silently ignored. A normal
+        // WebDriver click goes through the full browser input event pipeline,
+        // matching exactly what LoginPage does — and login works fine.
         scrollToElement(checkoutButton);
-        jsClick(checkoutButton);
+        WaitUtils.waitForClickable(checkoutButton).click();
         WaitUtils.waitForUrlToContain("checkout-step-one");
-        // Wait for the first-name field to be present and visible in the DOM
-        // before constructing CheckoutPage. jsClick() bypasses normal browser
-        // focus/navigation events, so the URL changes before React has fully
-        // rendered the checkout form. PageFactory.initElements() in the
-        // CheckoutPage constructor binds proxies immediately — if the DOM is
-        // not ready those proxies resolve to non-existent elements and all
-        // sendKeys() calls silently do nothing.
         WaitUtils.waitForVisibility(By.id("first-name"));
         return new CheckoutPage();
     }
