@@ -33,24 +33,27 @@ public class CheckoutPage extends BasePage {
 
     @Step("Filling checkout info: {firstName} {lastName} {postalCode}")
     public CheckoutPage fillCheckoutInfo(String firstName, String lastName, String postalCode) {
-        // sendKeys after clear() can fail to commit values in headless Chrome under
-        // parallel load — the proxy reference can go stale between clear() and sendKeys().
-        // Setting value via JS is atomic and guaranteed to reach the DOM.
-        jsSetValue(firstNameField, firstName);
-        jsSetValue(lastNameField, lastName);
-        jsSetValue(postalCodeField, postalCode);
+        // SauceDemo is a React app with controlled inputs.
+        // Setting element.value directly via JS is silently overwritten by React
+        // on the next render because React tracks its own internal fiber state.
+        // Dispatching a plain Event('input') is also ignored for the same reason.
+        //
+        // The correct approach for React controlled inputs is to use the native
+        // input value setter from Object.getOwnPropertyDescriptor, then dispatch
+        // a native InputEvent. This hooks into React's synthetic event system
+        // and updates React's internal state, so the value persists at submit time.
+        reactSetValue(firstNameField, firstName);
+        reactSetValue(lastNameField, lastName);
+        reactSetValue(postalCodeField, postalCode);
         return this;
     }
 
     @Step("Clicking continue")
     public CheckoutPage clickContinue() {
-        // Wait for the continue button to confirm we are on step-one,
-        // then do a real WebDriver click — this triggers both the click event
-        // and form validation in the browser's native event loop.
-        // form.submit() bypasses validation and submits before JS sets values.
-        // jsClick() fires a DOM event but doesn't trigger form submission in headless.
-        // A real waitForClickable().click() is correct here because the fields
-        // are already populated via jsSetValue(), so there is nothing to race.
+        // Real WebDriver click on the submit input triggers form submission.
+        // The form has no action/method so it does a GET to the current URL
+        // with field values as query params, then React router navigates to step-two.
+        // We must ensure fields have values (via reactSetValue above) before clicking.
         WaitUtils.waitForClickable(continueButton).click();
         WaitUtils.waitForUrlToContain("checkout-step-two");
         return this;
@@ -88,17 +91,23 @@ public class CheckoutPage extends BasePage {
     }
 
     /**
-     * Sets an input field's value via JavaScript and dispatches an 'input' event
-     * so the page's own JS (React, etc.) registers the change.
-     * This is more reliable than sendKeys in headless CI because it is atomic —
-     * there is no gap between clear() and sendKeys() where the proxy can go stale.
+     * Sets a value on a React controlled input by bypassing React's synthetic
+     * event system correctly.
+     *
+     * React controlled inputs maintain their own internal fiber state. Setting
+     * element.value directly via JS is overwritten by React on the next render.
+     * Dispatching a plain Event('input') is not recognised by React's synthetic
+     * system. The correct fix is to use the native HTMLInputElement value setter
+     * (obtained via Object.getOwnPropertyDescriptor on the prototype) and then
+     * dispatch a native InputEvent, which React's internals do recognise.
      */
-    private void jsSetValue(WebElement field, String value) {
+    private void reactSetValue(WebElement field, String value) {
         WaitUtils.waitForVisibility(field);
         ((JavascriptExecutor) driver).executeScript(
-            "arguments[0].value = arguments[1];" +
-            "arguments[0].dispatchEvent(new Event('input', { bubbles: true }));" +
-            "arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
+            "var nativeInputValueSetter = Object.getOwnPropertyDescriptor(" +
+            "    window.HTMLInputElement.prototype, 'value').set;" +
+            "nativeInputValueSetter.call(arguments[0], arguments[1]);" +
+            "arguments[0].dispatchEvent(new Event('input', { bubbles: true }));",
             field, value
         );
     }
