@@ -1,5 +1,6 @@
 package com.shopsphere.pages;
 
+import com.shopsphere.utils.WaitUtils;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -67,12 +68,14 @@ public class ProductsPage extends BasePage {
                         .getText().equals(productName))
                 .findFirst()
                 .ifPresent(item -> item.findElement(By.cssSelector(".inventory_item_name")).click());
+        WaitUtils.waitForUrlToContain("inventory-item");
         return new ProductDetailPage();
     }
 
     @Step("Navigating to cart")
     public CartPage goToCart() {
         click(cartIcon);
+        WaitUtils.waitForUrlToContain("cart");
         return new CartPage();
     }
 

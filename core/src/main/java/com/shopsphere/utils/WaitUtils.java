@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
 public class WaitUtils {
+
     private static final Logger log = LogManager.getLogger(WaitUtils.class);
     private static final int DEFAULT_WAIT = 20;
 
@@ -27,9 +28,24 @@ public class WaitUtils {
                 .until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
+    public static WebElement waitForVisibility(WebElement element) {
+        return waitForVisibility(element, DEFAULT_WAIT);
+    }
+
+    public static WebElement waitForVisibility(WebElement element, int seconds) {
+        log.debug("Waiting {}s for WebElement to be visible", seconds);
+        return new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(seconds))
+                .until(ExpectedConditions.visibilityOf(element));
+    }
+
     public static WebElement waitForClickable(By locator) {
         return new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(DEFAULT_WAIT))
                 .until(ExpectedConditions.elementToBeClickable(locator));
+    }
+
+    public static WebElement waitForClickable(WebElement element) {
+        return new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(DEFAULT_WAIT))
+                .until(ExpectedConditions.elementToBeClickable(element));
     }
 
     public static boolean waitForInvisibility(By locator) {
@@ -43,11 +59,9 @@ public class WaitUtils {
                         .executeScript("return document.readyState").equals("complete"));
     }
 
-    public static void hardWait(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+    public static void waitForUrlToContain(String fragment) {
+        log.debug("Waiting for URL to contain: {}", fragment);
+        new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(DEFAULT_WAIT))
+                .until(ExpectedConditions.urlContains(fragment));
     }
 }

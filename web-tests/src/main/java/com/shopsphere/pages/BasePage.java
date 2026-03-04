@@ -12,12 +12,8 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Select;
 import java.util.List;
 
-/**
- * BasePage - Parent class for all Page Objects.
- * Implements Page Object Model (POM) with Page Factory.
- * All page actions are logged and screenshot-ready for Allure reports.
- */
 public abstract class BasePage {
+
     protected final WebDriver driver;
     protected final Logger log;
 
@@ -41,7 +37,7 @@ public abstract class BasePage {
 
     protected void click(WebElement element) {
         log.debug("Clicking WebElement");
-        element.click();
+        WaitUtils.waitForClickable(element).click();
     }
 
     protected void type(By locator, String text) {
@@ -52,7 +48,7 @@ public abstract class BasePage {
     }
 
     protected void type(WebElement element, String text) {
-        element.clear();
+        WaitUtils.waitForVisibility(element).clear();
         element.sendKeys(text);
     }
 
@@ -61,7 +57,7 @@ public abstract class BasePage {
     }
 
     protected String getText(WebElement element) {
-        return element.getText().trim();
+        return WaitUtils.waitForVisibility(element).getText().trim();
     }
 
     protected boolean isDisplayed(By locator) {
