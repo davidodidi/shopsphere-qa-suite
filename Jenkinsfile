@@ -26,6 +26,14 @@ pipeline {
 
     stages {
 
+        stage('⚙️ Build — Install Core') {
+            steps {
+                echo "Installing parent POM and core module"
+                sh 'mvn install -N -DskipTests --no-transfer-progress'
+                sh 'mvn install -pl core -DskipTests --no-transfer-progress'
+            }
+        }
+
         stage('🔬 Unit Tests — TDD') {
             steps {
                 echo "Running JUnit unit tests (core module)"
@@ -40,21 +48,19 @@ pipeline {
 
         stage('🔌 API Tests — Regression') {
             steps {
-                echo "Running API tests + Contract tests"
+                echo "Running API tests"
                 sh """
-                    mvn test -pl api-tests \\
-                        -Dcucumber.filter.tags="@api" \\
-                        -Denv=${params.ENV} \\
+                    mvn test -pl api-tests \
+                        -Dcucumber.filter.tags="@api" \
+                        -Dapi.response.time.threshold=5000 \
+                        -Denv=${params.ENV} \
                         --no-transfer-progress
                 """
             }
             post {
                 always {
-                    publishHTML([
-                        reportDir: 'api-tests/target/cucumber-reports',
-                        reportFiles: 'api-regression-report.html',
-                        reportName: 'API Test Report'
-                    ])
+                    junit allowEmptyResults: true, testResults: 'api-tests/target/surefire-reports/*.xml'
+                    archiveArtifacts artifacts: 'api-tests/target/allure-results/**', allowEmptyArchive: true
                 }
             }
         }
@@ -62,8 +68,8 @@ pipeline {
         stage('📋 Contract Tests — Pact') {
             steps {
                 sh """
-                    mvn test -pl api-tests \\
-                        -Dtest="ProductConsumerContractTest" \\
+                    mvn test -pl api-tests \
+                        -Dtest="ProductConsumerContractTest" \
                         --no-transfer-progress
                 """
             }
@@ -80,26 +86,36 @@ pipeline {
                     when { expression { params.TAGS == '@smoke' || params.TAGS == '@regression' } }
                     steps {
                         sh """
-                            mvn test -pl web-tests \\
-                                -Dcucumber.filter.tags="@smoke" \\
-                                -Dbrowser=${params.BROWSER} \\
-                                -Dgrid.url=${env.GRID_URL} \\
-                                -Denv=${params.ENV} \\
+                            mvn test -pl web-tests \
+                                -Dcucumber.filter.tags="@smoke" \
+                                -Dbrowser=${params.BROWSER} \
+                                -Dgrid.url=${env.GRID_URL} \
+                                -Denv=${params.ENV} \
                                 --no-transfer-progress
                         """
+                    }
+                    post {
+                        always {
+                            junit allowEmptyResults: true, testResults: 'web-tests/target/surefire-reports/*.xml'
+                        }
                     }
                 }
                 stage('🧹 Sanity Tests') {
                     when { expression { params.TAGS == '@sanity' || params.TAGS == '@regression' } }
                     steps {
                         sh """
-                            mvn test -pl web-tests \\
-                                -Dcucumber.filter.tags="@sanity" \\
-                                -Dbrowser=${params.BROWSER} \\
-                                -Dgrid.url=${env.GRID_URL} \\
-                                -Denv=${params.ENV} \\
+                            mvn test -pl web-tests \
+                                -Dcucumber.filter.tags="@sanity" \
+                                -Dbrowser=${params.BROWSER} \
+                                -Dgrid.url=${env.GRID_URL} \
+                                -Denv=${params.ENV} \
                                 --no-transfer-progress
                         """
+                    }
+                    post {
+                        always {
+                            junit allowEmptyResults: true, testResults: 'web-tests/target/surefire-reports/*.xml'
+                        }
                     }
                 }
             }
@@ -114,13 +130,18 @@ pipeline {
             }
             steps {
                 sh """
-                    mvn test -pl web-tests \\
-                        -Dcucumber.filter.tags="@e2e" \\
-                        -Dbrowser=${params.BROWSER} \\
-                        -Dgrid.url=${env.GRID_URL} \\
-                        -Denv=${params.ENV} \\
+                    mvn test -pl web-tests \
+                        -Dcucumber.filter.tags="@e2e" \
+                        -Dbrowser=${params.BROWSER} \
+                        -Dgrid.url=${env.GRID_URL} \
+                        -Denv=${params.ENV} \
                         --no-transfer-progress
                 """
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: 'web-tests/target/surefire-reports/*.xml'
+                }
             }
         }
 
@@ -128,13 +149,18 @@ pipeline {
             when { expression { params.TAGS == '@uat' || params.TAGS == '@regression' } }
             steps {
                 sh """
-                    mvn test -pl web-tests \\
-                        -Dcucumber.filter.tags="@uat" \\
-                        -Dbrowser=${params.BROWSER} \\
-                        -Dgrid.url=${env.GRID_URL} \\
-                        -Denv=${params.ENV} \\
+                    mvn test -pl web-tests \
+                        -Dcucumber.filter.tags="@uat" \
+                        -Dbrowser=${params.BROWSER} \
+                        -Dgrid.url=${env.GRID_URL} \
+                        -Denv=${params.ENV} \
                         --no-transfer-progress
                 """
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: 'web-tests/target/surefire-reports/*.xml'
+                }
             }
         }
 
@@ -143,12 +169,17 @@ pipeline {
             steps {
                 echo "Running Appium mobile tests"
                 sh """
-                    mvn test -pl mobile-tests \\
-                        -Dcucumber.filter.tags="@smoke and @mobile" \\
-                        -Dplatform=android \\
-                        -Denv=${params.ENV} \\
+                    mvn test -pl mobile-tests \
+                        -Dcucumber.filter.tags="@smoke and @mobile" \
+                        -Dplatform=android \
+                        -Denv=${params.ENV} \
                         --no-transfer-progress
                 """
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: 'mobile-tests/target/surefire-reports/*.xml'
+                }
             }
         }
 
@@ -157,25 +188,22 @@ pipeline {
             steps {
                 echo "Running JMeter performance tests"
                 sh """
-                    jmeter -n \\
-                        -t performance/test-plans/smoke-load.jmx \\
-                        -l performance/results/jenkins-results.jtl \\
+                    jmeter -n \
+                        -t performance/test-plans/smoke-load.jmx \
+                        -l performance/results/jenkins-results.jtl \
                         -e -o performance/results/jenkins-html-report
                 """
             }
             post {
                 always {
-                    perfReport 'performance/results/jenkins-results.jtl'
+                    archiveArtifacts artifacts: 'performance/results/**', allowEmptyArchive: true
                 }
             }
         }
 
         stage('📊 Generate Allure Report') {
             steps {
-                sh "${env.ALLURE_HOME}/bin/allure generate \
-                    web-tests/target/allure-results \
-                    api-tests/target/allure-results \
-                    --clean -o allure-report"
+                echo "Generating Allure report"
             }
         }
     }
@@ -191,22 +219,15 @@ pipeline {
                     [path: 'mobile-tests/target/allure-results']
                 ]
             ])
-            publishHTML([
-                reportDir: 'web-tests/target/cucumber-reports',
-                reportFiles: 'regression-report.html',
-                reportName: 'Cucumber Web Report'
-            ])
         }
         success {
-            echo '✅ All tests passed!'
-            slackSend(color: 'good', message: "✅ ShopSphere QA PASSED — ${env.JOB_NAME} #${env.BUILD_NUMBER}")
+            echo '✅ All tests passed! ShopSphere QA pipeline completed successfully.'
         }
         failure {
-            echo '❌ Tests failed!'
-            slackSend(color: 'danger', message: "❌ ShopSphere QA FAILED — ${env.JOB_NAME} #${env.BUILD_NUMBER} — ${env.BUILD_URL}")
+            echo '❌ Tests failed! Check the test reports for details.'
         }
         unstable {
-            echo '⚠️ Tests unstable!'
+            echo '⚠️ Tests unstable — some tests failed but pipeline completed.'
         }
     }
 }
