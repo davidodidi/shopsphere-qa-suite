@@ -12,7 +12,7 @@
     <properties>
         <!--
             Default suite: smoke tests via SmokeTestRunner.
-            Override on the command line for other stages, e.g.:
+            Override per stage in Jenkinsfile, e.g.:
               -DsuiteXmlFile=src/test/resources/testng-regression.xml
         -->
         <suiteXmlFile>src/test/resources/testng-smoke.xml</suiteXmlFile>
