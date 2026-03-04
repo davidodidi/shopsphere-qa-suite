@@ -23,8 +23,8 @@ public class ProductsPage extends BasePage {
     @FindBy(id = "react-burger-menu-btn")
     private WebElement menuButton;
 
-    @FindBy(id = "shopping_cart_container")
-    private WebElement cartIcon;
+    @FindBy(css = "a.shopping_cart_link")
+    private WebElement cartLink;
 
     @FindBy(css = ".shopping_cart_badge")
     private WebElement cartBadge;
@@ -83,8 +83,8 @@ public class ProductsPage extends BasePage {
 
     @Step("Navigating to cart")
     public CartPage goToCart() {
-        scrollToElement(cartIcon);
-        jsClick(cartIcon);
+        scrollToElement(cartLink);
+        jsClick(cartLink);
         WaitUtils.waitForUrlToContain("cart");
         return new CartPage();
     }
