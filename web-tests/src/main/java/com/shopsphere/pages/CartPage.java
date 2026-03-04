@@ -3,10 +3,7 @@ import com.shopsphere.utils.WaitUtils;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 public class CartPage extends BasePage {
@@ -19,11 +16,7 @@ public class CartPage extends BasePage {
     public CartPage() { super(); }
     @Step("Proceeding to checkout")
     public CheckoutPage proceedToCheckout() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement btn = wait.until(
-            ExpectedConditions.elementToBeClickable(By.id("checkout"))
-        );
-        btn.click();
+        WaitUtils.waitForClickable(By.id("checkout")).click();
         WaitUtils.waitForUrlToContain("checkout-step-one");
         WaitUtils.waitForVisibility(By.id("first-name"));
         return new CheckoutPage();
