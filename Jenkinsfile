@@ -85,7 +85,7 @@ pipeline {
                     when { expression { params.TAGS == '@smoke' || params.TAGS == '@regression' } }
                     steps {
                         sh """
-                            mvn test -pl web-tests \
+                            mvn clean test -pl web-tests \
                                 -Dcucumber.filter.tags="@smoke" \
                                 -DsuiteXmlFile=src/test/resources/testng-smoke.xml \
                                 -Dbrowser=${params.BROWSER} \
