@@ -19,13 +19,16 @@ public CheckoutPage proceedToCheckout() {
 
     WebElement button = WaitUtils.waitForClickable(By.id("checkout"));
 
-    try {
-        button.click();
-    } catch (Exception e) {
-        jsClick(button);
-    }
+    // Ensure element is in view
+    scrollToElement(button);
 
-    // Wait for checkout page element instead of URL
+    // Always use JS click in CI (more reliable in headless)
+    jsClick(button);
+
+    // Wait for document ready
+    WaitUtils.waitForPageLoad();
+
+    // Now wait for checkout page element
     WaitUtils.waitForVisibility(By.id("first-name"));
 
     return new CheckoutPage();
