@@ -2,8 +2,8 @@ package com.shopsphere.pages;
 
 import com.shopsphere.utils.WaitUtils;
 import io.qameta.allure.Step;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,37 +37,29 @@ public class CheckoutPage extends BasePage {
 
     @Step("Filling checkout info: {firstName} {lastName} {postalCode}")
     public CheckoutPage fillCheckoutInfo(String firstName, String lastName, String postalCode) {
-        log.info("DEBUG fillCheckoutInfo called with: '{}' '{}' '{}'", firstName, lastName, postalCode);
-        log.info("DEBUG current URL before fill: {}", driver.getCurrentUrl());
+        // React 17 controlled inputs require real key events to update fiber state.
+        // JavaScript-based approaches (nativeInputValueSetter + InputEvent) work in a
+        // real browser console but React's headless Chrome event handling on Linux
+        // accepts the DOM value change without updating internal state, leaving the
+        // form logically empty at submit time.
+        // Actions.sendKeys fires genuine OS-level keyboard events (keydown, keypress,
+        // keyup) for each character, which React's synthetic event system treats
+        // identically to real user typing. This is the same mechanism that makes
+        // sendKeys work in GitHub Actions.
+        // We click the field first via Actions to ensure focus is set before typing,
+        // then type the value character by character via the Actions chain.
+        log.info("Filling checkout form: '{} {} {}'", firstName, lastName, postalCode);
 
-        WaitUtils.waitForClickable(firstNameField);
-        log.info("DEBUG firstNameField is clickable");
-
-        reactSetValue(firstNameField, firstName);
-        reactSetValue(lastNameField, lastName);
-        reactSetValue(postalCodeField, postalCode);
-
-        // Read values back from DOM to confirm they were set
-        String v1 = (String) ((JavascriptExecutor) driver).executeScript("return arguments[0].value;", firstNameField);
-        String v2 = (String) ((JavascriptExecutor) driver).executeScript("return arguments[0].value;", lastNameField);
-        String v3 = (String) ((JavascriptExecutor) driver).executeScript("return arguments[0].value;", postalCodeField);
-        log.info("DEBUG field values after reactSetValue — first:'{}' last:'{}' zip:'{}'", v1, v2, v3);
+        typeIntoField(firstNameField, firstName);
+        typeIntoField(lastNameField, lastName);
+        typeIntoField(postalCodeField, postalCode);
 
         return this;
     }
 
     @Step("Clicking continue")
     public CheckoutPage clickContinue() {
-        log.info("DEBUG clickContinue — URL before click: {}", driver.getCurrentUrl());
-
-        // Re-read values immediately before clicking to catch any React re-render wiping them
-        String v1 = (String) ((JavascriptExecutor) driver).executeScript("return document.getElementById('first-name').value;");
-        String v2 = (String) ((JavascriptExecutor) driver).executeScript("return document.getElementById('last-name').value;");
-        String v3 = (String) ((JavascriptExecutor) driver).executeScript("return document.getElementById('postal-code').value;");
-        log.info("DEBUG field values immediately before click — first:'{}' last:'{}' zip:'{}'", v1, v2, v3);
-
         WaitUtils.waitForClickable(continueButton).click();
-        log.info("DEBUG click fired — waiting for checkout-step-two");
         WaitUtils.waitForUrlToContain("checkout-step-two");
         return this;
     }
@@ -103,18 +95,25 @@ public class CheckoutPage extends BasePage {
         return driver.getCurrentUrl().contains("checkout");
     }
 
-    private void reactSetValue(WebElement field, String value) {
-        WaitUtils.waitForVisibility(field);
-        ((JavascriptExecutor) driver).executeScript(
-            "var nativeInputValueSetter = Object.getOwnPropertyDescriptor(" +
-            "    window.HTMLInputElement.prototype, 'value').set;" +
-            "nativeInputValueSetter.call(arguments[0], arguments[1]);" +
-            "arguments[0].dispatchEvent(new InputEvent('input', {" +
-            "    bubbles: true," +
-            "    inputType: 'insertText'," +
-            "    data: arguments[1]" +
-            "}));",
-            field, value
-        );
+    /**
+     * Types a value into a React 17 controlled input using Actions.
+     *
+     * Actions.click() focuses the field, then Actions.sendKeys() fires real
+     * OS-level key events (keydown, keypress, input, keyup) per character.
+     * These events are indistinguishable from real user typing and correctly
+     * update React's fiber state in all environments including headless Chrome
+     * on Linux (Jenkins/Docker).
+     *
+     * This replaces the JavaScript nativeInputValueSetter + InputEvent approach
+     * which, despite working in a real browser console, fails in headless Chrome
+     * on Linux because React's event delegation handles synthetic dispatched
+     * events differently from real keyboard input in that environment.
+     */
+    private void typeIntoField(WebElement field, String value) {
+        WaitUtils.waitForClickable(field);
+        new Actions(driver)
+            .click(field)
+            .sendKeys(value)
+            .perform();
     }
 }
