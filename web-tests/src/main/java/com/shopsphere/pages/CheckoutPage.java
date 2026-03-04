@@ -5,8 +5,12 @@ import io.qameta.allure.Step;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CheckoutPage extends BasePage {
+
+    private static final Logger log = LoggerFactory.getLogger(CheckoutPage.class);
 
     @FindBy(id = "first-name")
     private WebElement firstNameField;
@@ -33,25 +37,37 @@ public class CheckoutPage extends BasePage {
 
     @Step("Filling checkout info: {firstName} {lastName} {postalCode}")
     public CheckoutPage fillCheckoutInfo(String firstName, String lastName, String postalCode) {
-        // Wait for the first name field to be fully clickable before setting values.
-        // waitForUrlToContain("checkout-step-one") in CartPage confirms the HTML has
-        // arrived, but React mounts its fiber and attaches event handlers asynchronously
-        // after the DOM is painted. Under load (e.g. after 20+ sequential scenarios),
-        // this mount can take longer than usual. waitForClickable blocks until the
-        // element is both visible and enabled, which is the closest proxy for
-        // "React has finished mounting controlled inputs on this form".
-        // Without this wait, reactSetValue fires before React's fiber is ready and
-        // the InputEvent is dropped, leaving fields empty at submit time.
+        log.info("DEBUG fillCheckoutInfo called with: '{}' '{}' '{}'", firstName, lastName, postalCode);
+        log.info("DEBUG current URL before fill: {}", driver.getCurrentUrl());
+
         WaitUtils.waitForClickable(firstNameField);
+        log.info("DEBUG firstNameField is clickable");
+
         reactSetValue(firstNameField, firstName);
         reactSetValue(lastNameField, lastName);
         reactSetValue(postalCodeField, postalCode);
+
+        // Read values back from DOM to confirm they were set
+        String v1 = (String) ((JavascriptExecutor) driver).executeScript("return arguments[0].value;", firstNameField);
+        String v2 = (String) ((JavascriptExecutor) driver).executeScript("return arguments[0].value;", lastNameField);
+        String v3 = (String) ((JavascriptExecutor) driver).executeScript("return arguments[0].value;", postalCodeField);
+        log.info("DEBUG field values after reactSetValue — first:'{}' last:'{}' zip:'{}'", v1, v2, v3);
+
         return this;
     }
 
     @Step("Clicking continue")
     public CheckoutPage clickContinue() {
+        log.info("DEBUG clickContinue — URL before click: {}", driver.getCurrentUrl());
+
+        // Re-read values immediately before clicking to catch any React re-render wiping them
+        String v1 = (String) ((JavascriptExecutor) driver).executeScript("return document.getElementById('first-name').value;");
+        String v2 = (String) ((JavascriptExecutor) driver).executeScript("return document.getElementById('last-name').value;");
+        String v3 = (String) ((JavascriptExecutor) driver).executeScript("return document.getElementById('postal-code').value;");
+        log.info("DEBUG field values immediately before click — first:'{}' last:'{}' zip:'{}'", v1, v2, v3);
+
         WaitUtils.waitForClickable(continueButton).click();
+        log.info("DEBUG click fired — waiting for checkout-step-two");
         WaitUtils.waitForUrlToContain("checkout-step-two");
         return this;
     }
@@ -87,18 +103,6 @@ public class CheckoutPage extends BasePage {
         return driver.getCurrentUrl().contains("checkout");
     }
 
-    /**
-     * Sets a value on a React 17 controlled input.
-     *
-     * React 17 tracks input state via its fiber reconciler and ignores direct
-     * DOM property writes and plain Event('input') dispatches.
-     * A native InputEvent with inputType='insertText' and data set matches what
-     * Chrome fires on real keyboard input, hooking into React's synthetic event
-     * system and updating fiber state so the value persists at submit time.
-     *
-     * Verified against SauceDemo checkout page in Chrome 145 console:
-     * all three fields populated and form navigated to step-two on click.
-     */
     private void reactSetValue(WebElement field, String value) {
         WaitUtils.waitForVisibility(field);
         ((JavascriptExecutor) driver).executeScript(
