@@ -1,24 +1,57 @@
 <div align="center">
 
-# 🛒 ShopSphere QA Automation Suite (In Progress)
+# 🛒 ShopSphere QA Automation Suite
 
 ### Enterprise-Grade Full-Stack Testing Framework
 
-[![Smoke Tests](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/smoke-tests.yml/badge.svg)](https://github.com/davidodidi/shopsphere-qa-suite/actions)
-[![Regression Suite](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/regression-suite.yml/badge.svg)](https://github.com/davidodidi/shopsphere-qa-suite/actions)
-[![Mobile Tests](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/mobile-tests.yml/badge.svg)](https://github.com/davidodidi/shopsphere-qa-suite/actions)
+<!-- GitHub Actions Badges -->
+[![Smoke Tests](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/smoke-tests.yml/badge.svg)](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/smoke-tests.yml)
+[![Regression Suite](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/regression-suite.yml/badge.svg)](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/regression-suite.yml)
+[![Mobile Tests](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/mobile-tests.yml/badge.svg)](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/mobile-tests.yml)
+[![API Contract Tests](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/api-contract-tests.yml/badge.svg)](https://github.com/davidodidi/shopsphere-qa-suite/actions/workflows/api-contract-tests.yml)
+
+<!-- Jenkins Badge — replace YOUR_JENKINS_URL and YOUR_JOB_NAME -->
+[![Jenkins Build](https://img.shields.io/badge/Jenkins-passing-brightgreen?logo=jenkins&logoColor=white)](http://localhost:8080/job/shopsphere-qa-suite/)
+[![Allure Report](https://img.shields.io/badge/Allure-Report-orange?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJMMiAyMmgyMEwxMiAyeiIgZmlsbD0id2hpdGUiLz48L3N2Zz4=&logoColor=white)](http://localhost:9090/job/shopsphere-qa-suite/allure/#)
+
+<!-- Static Badges -->
 [![Java](https://img.shields.io/badge/Java-11-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Selenium](https://img.shields.io/badge/Selenium-4.15-43B02A?logo=selenium&logoColor=white)](https://www.selenium.dev/)
 [![Appium](https://img.shields.io/badge/Appium-3.2.0-662D8C?logo=appium&logoColor=white)](http://appium.io/)
 [![Cucumber](https://img.shields.io/badge/Cucumber-7.14-23D96C?logo=cucumber&logoColor=white)](https://cucumber.io/)
+[![RestAssured](https://img.shields.io/badge/RestAssured-5.3.2-4DB33D)](https://rest-assured.io/)
+[![Pact](https://img.shields.io/badge/Pact-4.6.5-E43C5B)](https://docs.pact.io/)
+[![JMeter](https://img.shields.io/badge/JMeter-5.6.2-D22128?logo=apache&logoColor=white)](https://jmeter.apache.org/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**A production-grade QA automation portfolio covering Web, Mobile, and API testing layers of the same e-commerce application — with Pact contract testing, JMeter performance testing, and full CI/CD via GitHub Actions and Jenkins.**
+**A production-grade QA automation portfolio covering Web, Mobile, and API testing for a full e-commerce application — with Pact contract testing, JMeter performance testing, and full CI/CD via GitHub Actions and Jenkins.**
 
-[📊 Live Allure Report](https://davidodidi.github.io/shopsphere-qa-suite/) · [🚀 Quick Start](#-quick-start) · [🏗 Architecture](#-architecture)
+[📊 Live Allure Report](https://davidodidi.github.io/shopsphere-qa-suite/) · [🚀 Quick Start](#-quick-start) · [🏗 Architecture](#-architecture) · [📈 Latest Results](#-latest-pipeline-results)
 
 </div>
+
+---
+
+## ✅ Latest Pipeline Results
+
+> Last full Jenkins pipeline run — all stages passing.
+
+| Suite | Tests | Passed | Failed | Pass Rate |
+|-------|-------|--------|--------|-----------|
+| 🔄 End-to-End Checkout Flow | 1 | 1 | 0 | ✅ 100% |
+| 🔌 Product API - HTTP Protocol Validation | 9 | 9 | 0 | ✅ 100% |
+| 🛍 Product Browsing | 5 | 5 | 0 | ✅ 100% |
+| 🔐 User Authentication | 7 | 7 | 0 | ✅ 100% |
+| 👤 User Service API Validation | 6 | 6 | 0 | ✅ 100% |
+| ⚡ Performance (JMeter smoke-load) | 178 samples | 178 | 0 | ✅ 0% errors |
+| **TOTAL** | **28** | **28** | **0** | **✅ 100%** |
+
+> 📊 **[View Full Allure Report →](http://localhost:9090/job/shopsphere-qa-suite/allure/#)**
+>
+> **Full pipeline: 28/28 tests passing · 100% pass rate · 0 failures**
+>
+> **JMeter smoke-load baseline:** 178 samples · 0% error rate · p95 107ms
 
 ---
 
@@ -28,18 +61,16 @@
 |---|---|
 | **Web UI Automation** | Selenium WebDriver 4, Page Object Model, Page Factory (`@FindBy`) |
 | **Mobile Automation** | Appium 3, `@AndroidFindBy`, `@iOSXCUITFindBy`, Android + iOS |
-| **API Testing** | RestAssured, GET/POST/PUT/PATCH/DELETE/HEAD/OPTIONS coverage |
+| **API Testing** | RestAssured, full HTTP verb coverage (GET/POST/PUT/PATCH/DELETE/HEAD/OPTIONS) |
 | **BDD** | Cucumber 7, Gherkin feature files, shared across web + mobile |
 | **TDD** | JUnit 5 — core utilities written test-first |
 | **Contract Testing** | Pact (consumer-driven contracts), consumer + provider verification |
 | **Performance Testing** | JMeter — smoke, spike, soak, and stress test plans |
 | **Test Types** | Smoke · Sanity · Regression · Integration · System · E2E · UAT |
-| **HTTP / SOA** | All HTTP verbs, status code validation, response time assertions |
 | **CI/CD** | GitHub Actions (multi-job, nightly, parallel) + Jenkins declarative pipeline |
 | **Infrastructure** | Docker Compose — Selenium Grid (Hub + Chrome×2 + Firefox) + Allure server |
 | **Cloud** | AWS Device Farm (mobile), S3 (reports), EC2 (CI runners) |
-| **Reporting** | Allure Report published to GitHub Pages on every run |
-| **Frameworks** | TestNG (sequential execution) + JUnit 5 |
+| **Reporting** | Allure Report published to GitHub Pages + Jenkins Allure plugin |
 
 ---
 
@@ -116,7 +147,7 @@ shopsphere-qa-suite/
 │   └── src/
 │       ├── main/java/com/shopsphere/pages/
 │       │   ├── BasePage.java                 ← POM base: PageFactory, Allure @Step, helpers
-│       │   ├── LoginPage.java                ← @FindBy Page Factory annotations
+│       │   ├── LoginPage.java
 │       │   ├── ProductsPage.java
 │       │   ├── ProductDetailPage.java
 │       │   ├── CartPage.java
@@ -128,79 +159,65 @@ shopsphere-qa-suite/
 │           │   └── runners/
 │           │       ├── SmokeTestRunner.java
 │           │       ├── SanityTestRunner.java
-│           │       ├── RegressionTestRunner.java  ← parallel=false (sequential for CI stability)
+│           │       ├── RegressionTestRunner.java
 │           │       ├── E2ETestRunner.java
 │           │       └── UATTestRunner.java
-│           └── resources/
-│               ├── features/
-│               │   ├── login.feature         ← @smoke @sanity @regression
-│               │   ├── product_browsing.feature
-│               │   ├── checkout.feature      ← @e2e full purchase flow
-│               │   └── uat.feature           ← @uat business sign-off
-│               ├── testng-smoke.xml
-│               └── testng-regression.xml     ← sequential (parallel=none)
+│           └── resources/features/
+│               ├── login.feature
+│               ├── product_browsing.feature
+│               ├── checkout.feature
+│               └── uat.feature
 │
 ├── mobile-tests/                             ← Appium + Cucumber
 │   └── src/
 │       ├── main/java/com/shopsphere/
-│       │   ├── config/AppiumDriverManager.java  ← Android + iOS + AWS Device Farm
-│       │   └── screens/                         ← Mirror of web pages
+│       │   ├── config/AppiumDriverManager.java
+│       │   └── screens/
 │       │       ├── BaseScreen.java
 │       │       ├── LoginScreen.java          ← @AndroidFindBy + @iOSXCUITFindBy
 │       │       ├── ProductsScreen.java
 │       │       ├── CartScreen.java
 │       │       └── CheckoutScreen.java
-│       └── test/
-│           ├── java/com/shopsphere/mobile/
-│           │   ├── hooks/MobileHooks.java
-│           │   ├── stepdefs/                 ← Same Gherkin steps, Appium implementation
-│           │   └── runners/                  ← MobileSmokeRunner, MobileRegressionRunner
-│           └── resources/
-│               ├── apps/
-│               │   └── SauceLabs.apk         ← Android test app
-│               ├── features/                 ← Shared feature files from web-tests
-│               └── capabilities/
-│                   ├── android.json
-│                   └── ios.json
+│       └── test/resources/
+│           ├── apps/SauceLabs.apk
+│           └── capabilities/
+│               ├── android.json
+│               └── ios.json
 │
 ├── api-tests/                                ← RestAssured + Cucumber + Pact
-│   └── src/test/
-│       ├── java/com/shopsphere/api/
-│       │   ├── specs/
-│       │   │   ├── ApiBaseSpec.java          ← RequestSpec, ResponseSpec, auth helpers
-│       │   │   ├── AuthSpec.java             ← POST /auth/login, /refresh
-│       │   │   └── ProductApiSpec.java       ← Full CRUD + HEAD + OPTIONS
-│       │   ├── stepdefs/ApiSteps.java        ← All HTTP verbs as step definitions
-│       │   ├── contract/
-│       │   │   ├── ProductConsumerContractTest.java  ← Pact consumer definitions
-│       │   │   └── ProductProviderContractTest.java  ← Provider verification
-│       │   └── runners/
-│       └── resources/features/
-│           ├── product_api.feature           ← GET/POST/PUT/PATCH/DELETE/HEAD/OPTIONS
-│           └── user_api.feature
+│   └── src/test/java/com/shopsphere/api/
+│       ├── specs/
+│       │   ├── ApiBaseSpec.java
+│       │   ├── AuthSpec.java
+│       │   └── ProductApiSpec.java
+│       ├── stepdefs/ApiSteps.java
+│       ├── contract/
+│       │   ├── ProductConsumerContractTest.java
+│       │   └── ProductProviderContractTest.java
+│       └── runners/
 │
-├── performance/                              ← JMeter
+├── performance/
 │   ├── test-plans/
-│   │   ├── smoke-load.jmx                   ← 10 users, p95 < 2s baseline
-│   │   ├── soak-test.jmx                    ← 50 users × 60 min, memory stability
-│   │   ├── spike-test.jmx                   ← 0→200 users in 30s
-│   │   └── stress-test.jmx                  ← Incremental load to find breaking point
-│   └── scripts/check_results.py             ← CI threshold analyser (error rate, p95)
+│   │   ├── smoke-load.jmx
+│   │   ├── soak-test.jmx
+│   │   ├── spike-test.jmx
+│   │   └── stress-test.jmx
+│   └── scripts/check_results.py
 │
 ├── docker/
-│   ├── docker-compose.yml                   ← Selenium Grid + Allure server
+│   ├── docker-compose.yml
 │   ├── Dockerfile.web-tests
 │   └── Dockerfile.api-tests
 │
 ├── .github/workflows/
-│   ├── smoke-tests.yml                      ← Every PR: web smoke + API smoke (parallel)
-│   ├── regression-suite.yml                 ← Nightly: unit→API→web (matrix)→E2E→Allure Pages
-│   ├── api-contract-tests.yml               ← On API changes: Pact consumer + artifact upload
-│   ├── performance-tests.yml                ← Weekly Sunday: JMeter smoke load
-│   └── mobile-tests.yml                     ← Manual + nightly: Android emulator (Pixel 6 API 35)
+│   ├── smoke-tests.yml
+│   ├── regression-suite.yml
+│   ├── api-contract-tests.yml
+│   ├── performance-tests.yml
+│   └── mobile-tests.yml
 │
-├── Jenkinsfile                              ← Declarative pipeline with all stages
-└── scripts/setup.sh                        ← One-command local setup
+├── Jenkinsfile
+└── scripts/setup.sh
 ```
 
 ---
@@ -225,9 +242,10 @@ chmod +x scripts/setup.sh && ./scripts/setup.sh
 ### 2. Start Selenium Grid
 
 ```bash
-docker compose -f docker/docker-compose.yml up -d selenium-hub chrome-node-1
-# Grid UI: http://localhost:4444
-# Allure UI: http://localhost:5252
+docker compose -f docker/docker-compose.yml up -d
+# Grid console:  http://localhost:4444
+# Allure UI:     http://localhost:5252
+# Chrome VNC:    http://localhost:7900  (watch tests live)
 ```
 
 ### 3. Run Tests
@@ -236,16 +254,16 @@ docker compose -f docker/docker-compose.yml up -d selenium-hub chrome-node-1
 # Unit Tests (TDD — JUnit 5)
 mvn test -pl core
 
-# Web Smoke Tests
+# Web Smoke
 mvn test -pl web-tests -Dcucumber.filter.tags="@smoke"
 
-# Web Regression (all browsers)
+# Web Regression
 mvn test -pl web-tests -Dcucumber.filter.tags="@regression" -Dbrowser=chrome
 
-# Web E2E Tests
+# Web E2E
 mvn test -pl web-tests -Dcucumber.filter.tags="@e2e"
 
-# Web UAT Tests
+# Web UAT
 mvn test -pl web-tests -Dcucumber.filter.tags="@uat"
 
 # API Tests
@@ -254,7 +272,7 @@ mvn test -pl api-tests -Dcucumber.filter.tags="@api"
 # Contract Tests (Pact)
 mvn test -pl api-tests -Dtest="ProductConsumerContractTest"
 
-# Mobile Tests (requires Appium server + Android emulator — see Mobile Setup below)
+# Mobile Tests (requires Appium server — see Mobile Setup)
 mvn test -pl mobile-tests \
   -Dplatform=android \
   -Dappium.server=http://127.0.0.1:4723 \
@@ -264,7 +282,7 @@ mvn test -pl mobile-tests \
 # Full Suite
 mvn test --no-transfer-progress
 
-# Performance Tests (requires JMeter)
+# Performance Tests
 jmeter -n -t performance/test-plans/smoke-load.jmx \
        -l performance/results/results.jtl \
        -e -o performance/results/html-report
@@ -279,82 +297,53 @@ mvn allure:serve -pl web-tests
 ### 5. Run via Docker
 
 ```bash
-# Web smoke tests in Grid
 docker build -f docker/Dockerfile.web-tests -t shopsphere-web-tests .
-docker run -e TAGS="@smoke" -e GRID_URL="http://selenium-hub:4444/wd/hub" \
-  --network shopsphere-qa_shopsphere-qa shopsphere-web-tests
+docker run -e TAGS="@smoke" \
+  -e GRID_URL="http://selenium-hub:4444/wd/hub" \
+  --network shopsphere-qa_shopsphere-qa \
+  shopsphere-web-tests
 
-# API tests
 docker build -f docker/Dockerfile.api-tests -t shopsphere-api-tests .
 docker run -e TAGS="@api" shopsphere-api-tests
 ```
 
 ---
 
-## 📱 Mobile Test Local Setup
-
-Mobile tests run locally against an Android emulator via Appium. The following steps are required before executing the mobile test suite.
+## 📱 Mobile Test Setup
 
 ### Prerequisites
 
 | Tool | Version | Notes |
 |------|---------|-------|
 | Node.js | 20+ | Required to run Appium |
-| Appium | 3.2.0 | Install globally via npm |
-| UIAutomator2 driver | latest | Appium driver for Android |
+| Appium | 3.2.0 | `npm install -g appium` |
+| UIAutomator2 driver | latest | `appium driver install uiautomator2` |
 | Android Studio | latest | Provides emulator + SDK |
-| Android SDK | API 35 (Android 15) | Install via SDK Manager in Android Studio |
-| ADB | included with SDK | Must be on PATH |
+| Android SDK | API 35 | Install via SDK Manager |
+| ADB | included | Must be on PATH |
 
-### Step 1 — Install Appium and UIAutomator2 driver
+> ⚠️ **Appium 3.x:** The `/wd/hub` suffix has been removed. Use `http://127.0.0.1:4723` — not `http://127.0.0.1:4723/wd/hub`.
 
 ```bash
+# 1. Install Appium
 npm install -g appium
 appium driver install uiautomator2
-```
 
-> ⚠️ **Appium 3.x breaking change:** The `/wd/hub` suffix has been removed. The correct server URL is `http://127.0.0.1:4723` — not `http://127.0.0.1:4723/wd/hub`.
-
-### Step 2 — Set environment variables
-
-```bash
-# Windows (set in System Environment Variables or your shell profile)
+# 2. Set environment variables (Windows)
 ANDROID_HOME=C:\Users\<YourUsername>\AppData\Local\Android\Sdk
+# Add to PATH: %ANDROID_HOME%\platform-tools and %ANDROID_HOME%\emulator
 
-# Add to PATH:
-%ANDROID_HOME%\platform-tools
-%ANDROID_HOME%\emulator
-```
-
-### Step 3 — Start the Android emulator
-
-Open **Android Studio → Device Manager** and start the **Pixel 6, API 35 (Android 15)** emulator. Confirm it is detected by ADB:
-
-```bash
+# 3. Start emulator (Pixel 6, API 35) then confirm:
 adb devices
-# Expected output:
-# List of devices attached
 # emulator-5554   device
-```
 
-### Step 4 — Configure the APK path
+# 4. Update APK path in AppiumDriverManager.java
+# capabilities.setCapability("app", "C:/path/to/Android.SauceLabs.Mobile.Sample.app.apk");
 
-In `mobile-tests/src/main/java/com/shopsphere/config/AppiumDriverManager.java`, the `app` capability must point to the absolute path of the SauceLabs APK on your machine:
+# 5. Start Appium
+appium  # http://127.0.0.1:4723
 
-```java
-capabilities.setCapability("app", "C:/Users/<YourUsername>/path/to/Android.SauceLabs.Mobile.Sample.app.x.x.x.apk");
-```
-
-### Step 5 — Start Appium server
-
-```bash
-appium
-# Server starts at http://127.0.0.1:4723
-```
-
-### Step 6 — Run mobile tests
-
-```bash
+# 6. Run mobile tests
 mvn test -pl mobile-tests \
   -Dplatform=android \
   -Dappium.server=http://127.0.0.1:4723 \
@@ -362,13 +351,9 @@ mvn test -pl mobile-tests \
   --no-transfer-progress
 ```
 
-### Test isolation note
+**Test isolation:** `AppiumDriverManager` sets `noReset: false` — the app fully resets to login screen between sessions, preventing stale state.
 
-`AppiumDriverManager` sets `noReset: false`, which ensures the app is fully reset to the login screen between test sessions. This prevents scenarios from inheriting stale state from a previous run.
-
-### Debugging with Appium Inspector
-
-[Appium Inspector](https://github.com/appium/appium-inspector) is a GUI tool for inspecting the app's element tree and building locators. Connect it to `http://127.0.0.1:4723` with the same capabilities used in `AppiumDriverManager.java` to inspect elements interactively without running a full test.
+**Debugging:** Use [Appium Inspector](https://github.com/appium/appium-inspector) connected to `http://127.0.0.1:4723` to inspect element trees and build locators interactively.
 
 ---
 
@@ -376,9 +361,9 @@ mvn test -pl mobile-tests \
 
 ### Test Types & Tag Mapping
 
-| Type | Tag | Runner | Runs When |
-|------|-----|--------|-----------|
-| **Unit** | — | JUnit 5 | Every build (core module) |
+| Type | Tag | Runner | Trigger |
+|------|-----|--------|---------|
+| **Unit** | — | JUnit 5 | Every build |
 | **Smoke** | `@smoke` | SmokeTestRunner | Every PR & deploy |
 | **Sanity** | `@sanity` | SanityTestRunner | Post-deployment |
 | **Regression** | `@regression` | RegressionTestRunner | Nightly (sequential) |
@@ -393,23 +378,21 @@ mvn test -pl mobile-tests \
 
 ```
           /\
-         /  \         ← E2E / UAT (Selenium + Appium)
-        / UI \        
+         /  \         ← E2E / UAT  (Selenium + Appium)
+        / UI \
        /──────\
-      / API    \      ← Integration / Contract (RestAssured + Pact)
+      / API    \      ← Integration / Contract  (RestAssured + Pact)
      /──────────\
-    / Unit Tests \    ← TDD (JUnit 5 — core utilities)
+    / Unit Tests \    ← TDD  (JUnit 5 — core utilities)
    /______________\
 ```
 
 ---
 
-## 🔌 API Testing — HTTP Protocol Coverage
+## 🔌 API Testing — Full HTTP Verb Coverage
 
-The `api-tests` module validates all HTTP verbs defined in RFC 9110:
-
-| Method | Endpoint | What's Tested |
-|--------|----------|---------------|
+| Method | Endpoint | Assertion |
+|--------|----------|-----------|
 | `GET` | `/products` | 200, JSON body, response time < 3s |
 | `GET` | `/products/{id}` | 200 with fields, 404 for missing |
 | `POST` | `/products` | 201 created, 401 without auth |
@@ -423,29 +406,25 @@ The `api-tests` module validates all HTTP verbs defined in RFC 9110:
 
 ## 🤝 Contract Testing (Pact)
 
-Consumer-driven contract testing ensures the backend API never breaks the frontend or mobile app without warning.
+Consumer-driven contract testing prevents API breaking changes from reaching the frontend or mobile app undetected.
 
 ```
 ShopSphereFrontend (Consumer)       ShopSphereProductService (Provider)
          │                                        │
          │  1. Define expected interactions        │
          │──────────────────────────────────────►  │
-         │                                        │
          │  2. Pact generates contract JSON        │
          │◄──────────────────────────────────────  │
-         │                                        │
          │  3. Provider verifies contract          │
          │──────────────────────────────────────►  │
          │         (fails fast if API changes)     │
 ```
 
-Contracts live in `api-tests/target/pacts/` and are published as CI artifacts on every run.
+Contracts are generated to `api-tests/target/pacts/` and published as CI artifacts on every run.
 
 ---
 
 ## ⚡ Performance Testing (JMeter)
-
-Four test plans covering the full performance testing spectrum:
 
 | Plan | Users | Duration | Goal |
 |------|-------|----------|------|
@@ -456,7 +435,7 @@ Four test plans covering the full performance testing spectrum:
 
 **Latest smoke-load results:** 178 samples · 0% error rate · p95 107ms
 
-Results are validated automatically by `performance/scripts/check_results.py`:
+CI thresholds enforced by `performance/scripts/check_results.py`:
 - Max error rate: 1.0%
 - Max p95 response time: 3,000ms
 
@@ -464,19 +443,18 @@ Results are validated automatically by `performance/scripts/check_results.py`:
 
 ## 📱 Mobile Testing Strategy
 
-The mobile test suite mirrors the web test suite using the same Gherkin feature files. The **same business scenarios** run against both platforms — different page/screen objects, same Cucumber steps.
+The mobile test suite mirrors the web suite using the **same Gherkin feature files**. One set of business scenarios, two implementations:
 
 ```
-login.feature (shared)
+login.feature  (shared)
        │
-       ├──► WebHooks.java + LoginPage.java     (Selenium)
-       │
+       ├──► WebHooks.java  +  LoginPage.java    (Selenium)
        └──► MobileHooks.java + LoginScreen.java (Appium)
 ```
 
 **Supported platforms:**
-- Android via UIAutomator2 (`android.json` capabilities)
-- iOS via XCUITest (`ios.json` capabilities)
+- Android via UIAutomator2 (`android.json`)
+- iOS via XCUITest (`ios.json`)
 - AWS Device Farm via `deviceArn` capability
 
 ---
@@ -488,48 +466,49 @@ login.feature (shared)
 | Workflow | Trigger | Jobs |
 |----------|---------|------|
 | `smoke-tests.yml` | Every PR + push to main | Web Smoke + API Smoke (parallel) |
-| `regression-suite.yml` | Nightly 2AM UTC Mon-Fri | Unit → API → Web (matrix: Chrome/Firefox) → E2E → Allure Pages |
+| `regression-suite.yml` | Nightly 2AM UTC Mon–Fri | Unit → API → Web matrix (Chrome/Firefox) → E2E → Allure Pages |
 | `api-contract-tests.yml` | On API file changes | Pact consumer + artifact upload |
 | `performance-tests.yml` | Weekly Sunday 3AM UTC | JMeter smoke load + threshold check |
-| `mobile-tests.yml` | Manual + Nightly 3AM UTC Mon-Fri | Android emulator (Pixel 6 API 35) + Allure upload |
+| `mobile-tests.yml` | Manual + Nightly 3AM UTC Mon–Fri | Android emulator (Pixel 6 API 35) |
 
 ### Jenkins Declarative Pipeline
 
 ```
 🔬 Unit Tests → 🔌 API Tests → 📋 Contract Tests
-       ↓
-🌐 Web Tests (Smoke || Sanity in parallel)
-       ↓
-🔄 E2E Tests → ✅ UAT Tests
-       ↓
-📱 Mobile Tests (if enabled)
-       ↓
-⚡ Performance Tests (if enabled)
-       ↓
-📊 Allure Report Generation
+                      ↓
+         🌐 Web Smoke ║ 🩺 Sanity  (parallel)
+                      ↓
+              🔄 E2E Tests → ✅ UAT Tests
+                      ↓
+         📱 Mobile Tests  (if enabled)
+                      ↓
+         ⚡ Performance   (if enabled)
+                      ↓
+         📊 Allure Report Generation
 ```
 
-Jenkins is configured via `Jenkinsfile` with:
-- Parameterised builds (environment, browser, tags, mobile toggle, perf toggle)
+Pipeline features:
+- Parameterised builds (environment, browser, tags, mobile toggle, performance toggle)
 - Parallel stage execution
 - Slack notifications on pass/fail
-- Allure report publishing plugin integration
+- Allure report publishing via Jenkins plugin
 
 ---
 
 ## 🐳 Docker Infrastructure
 
 ```yaml
-# Start the full QA infrastructure
-docker compose -f docker/docker-compose.yml up -d
+# Services started by docker-compose.yml
+selenium-hub   → http://localhost:4444   (Grid console)
+chrome-node-1  → http://localhost:7900   (VNC — watch tests live)
+chrome-node-2  → Second Chrome node for parallelism
+firefox-node   → Firefox cross-browser node
+allure         → http://localhost:5050   (Allure API)
+allure-ui      → http://localhost:5252   (Allure dashboard)
+```
 
-# Services:
-#   selenium-hub     → http://localhost:4444  (Grid console)
-#   chrome-node-1    → VNC at http://localhost:7900 (watch tests live)
-#   chrome-node-2    → Second Chrome node for parallelism
-#   firefox-node     → Firefox cross-browser node
-#   allure           → http://localhost:5050  (Allure API)
-#   allure-ui        → http://localhost:5252  (Allure dashboard)
+```bash
+docker compose -f docker/docker-compose.yml up -d
 ```
 
 ---
@@ -544,7 +523,7 @@ docker compose -f docker/docker-compose.yml up -d
 
 ---
 
-## 🛠 Tech Stack Reference
+## 🛠 Tech Stack
 
 | Category | Technology | Version |
 |----------|-----------|---------|
@@ -570,17 +549,57 @@ docker compose -f docker/docker-compose.yml up -d
 
 ---
 
+## 🔧 Troubleshooting
+
+**Selenium Grid connection refused**
+```bash
+# Confirm hub is running
+docker ps | grep selenium
+curl http://localhost:4444/wd/hub/status
+```
+
+**Appium server not detected**
+```bash
+# Confirm Appium is running and ADB sees the emulator
+adb devices
+appium --version
+# Ensure ANDROID_HOME is set and platform-tools is on PATH
+```
+
+**Pact consumer test fails**
+- Ensure the mock server port (default 8080) is free
+- Pact contracts are written to `api-tests/target/pacts/` — confirm the directory exists after a run
+
+**JMeter threshold failure in CI**
+- Review `performance/results/html-report/index.html` for p95 breakdown
+- `check_results.py` exits non-zero if error rate > 1% or p95 > 3000ms
+
+---
+
+## 📊 Reporting
+
+| Report | Location | Published By |
+|--------|----------|--------------|
+| Allure (web) | [GitHub Pages](https://davidodidi.github.io/shopsphere-qa-suite/) | GitHub Actions (nightly) |
+| Allure (all modules) | Jenkins Allure Plugin | Jenkins pipeline |
+| JMeter HTML report | `performance/results/html-report/` | `performance-tests.yml` |
+| Pact contracts | `api-tests/target/pacts/` | CI artifact upload |
+| Cucumber HTML | `target/cucumber-reports/` | Each module on every run |
+
+---
+
 ## 👨‍💻 Author
 
-**David Odidi** — QA Automation Engineer  
-Java • Selenium • Playwright • Cypress • RestAssured • Python • CI/CD (GitHub Actions and Jenkins)  
-[github.com/davidodidi](https://github.com/davidodidi)
+**David Odidi** — QA Automation Engineer
+
+Java · Selenium · Appium · RestAssured · Playwright · Cypress · Python · CI/CD (GitHub Actions · Jenkins) · AWS
+
+[![GitHub](https://img.shields.io/badge/GitHub-davidodidi-181717?logo=github)](https://github.com/davidodidi)
 
 ---
 
 <div align="center">
 
-*Built to demonstrate full-stack QA automation capability for SDET and QA Automation Engineer roles*  
-This project is tested with BrowserStack
+*Built to demonstrate full-stack QA automation capability for SDET and QA Automation Engineer roles*
 
 </div>
