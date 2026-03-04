@@ -33,15 +33,12 @@ public class CheckoutPage extends BasePage {
 
     @Step("Filling checkout info: {firstName} {lastName} {postalCode}")
     public CheckoutPage fillCheckoutInfo(String firstName, String lastName, String postalCode) {
-        // SauceDemo is a React app with controlled inputs.
-        // Setting element.value directly via JS is silently overwritten by React
-        // on the next render because React tracks its own internal fiber state.
-        // Dispatching a plain Event('input') is also ignored for the same reason.
-        //
-        // The correct approach for React controlled inputs is to use the native
-        // input value setter from Object.getOwnPropertyDescriptor, then dispatch
-        // a native InputEvent. This hooks into React's synthetic event system
-        // and updates React's internal state, so the value persists at submit time.
+        // SauceDemo runs React 17. React 17 changed how it tracks controlled input state.
+        // Setting element.value via nativeInputValueSetter + plain Event('input') works
+        // for React 16 but is ignored by React 17's fiber reconciler.
+        // React 17 requires a native InputEvent with inputType and data properties set,
+        // which matches what the browser fires on real keyboard input.
+        // Verified in browser console: this approach navigates to step-two on click.
         reactSetValue(firstNameField, firstName);
         reactSetValue(lastNameField, lastName);
         reactSetValue(postalCodeField, postalCode);
@@ -50,10 +47,6 @@ public class CheckoutPage extends BasePage {
 
     @Step("Clicking continue")
     public CheckoutPage clickContinue() {
-        // Real WebDriver click on the submit input triggers form submission.
-        // The form has no action/method so it does a GET to the current URL
-        // with field values as query params, then React router navigates to step-two.
-        // We must ensure fields have values (via reactSetValue above) before clicking.
         WaitUtils.waitForClickable(continueButton).click();
         WaitUtils.waitForUrlToContain("checkout-step-two");
         return this;
@@ -91,15 +84,18 @@ public class CheckoutPage extends BasePage {
     }
 
     /**
-     * Sets a value on a React controlled input by bypassing React's synthetic
-     * event system correctly.
+     * Sets a value on a React 17 controlled input.
      *
-     * React controlled inputs maintain their own internal fiber state. Setting
-     * element.value directly via JS is overwritten by React on the next render.
-     * Dispatching a plain Event('input') is not recognised by React's synthetic
-     * system. The correct fix is to use the native HTMLInputElement value setter
-     * (obtained via Object.getOwnPropertyDescriptor on the prototype) and then
-     * dispatch a native InputEvent, which React's internals do recognise.
+     * React 17 tracks input state via its fiber reconciler and ignores direct
+     * DOM property writes. It also ignores plain Event('input') dispatches.
+     * What React 17 DOES recognise is a native InputEvent with inputType and
+     * data set — this matches what Chrome fires on real keyboard input and hooks
+     * into React's synthetic event system, updating the fiber state so the value
+     * is present when the form submits.
+     *
+     * Verified against SauceDemo checkout page in Chrome 145 console:
+     * nativeInputValueSetter + InputEvent('input', inputType='insertText', data=value)
+     * successfully populates all three fields and allows form submission to step-two.
      */
     private void reactSetValue(WebElement field, String value) {
         WaitUtils.waitForVisibility(field);
@@ -107,7 +103,11 @@ public class CheckoutPage extends BasePage {
             "var nativeInputValueSetter = Object.getOwnPropertyDescriptor(" +
             "    window.HTMLInputElement.prototype, 'value').set;" +
             "nativeInputValueSetter.call(arguments[0], arguments[1]);" +
-            "arguments[0].dispatchEvent(new Event('input', { bubbles: true }));",
+            "arguments[0].dispatchEvent(new InputEvent('input', {" +
+            "    bubbles: true," +
+            "    inputType: 'insertText'," +
+            "    data: arguments[1]" +
+            "}));",
             field, value
         );
     }

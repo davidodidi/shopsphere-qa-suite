@@ -39,7 +39,7 @@
 | **Infrastructure** | Docker Compose — Selenium Grid (Hub + Chrome×2 + Firefox) + Allure server |
 | **Cloud** | AWS Device Farm (mobile), S3 (reports), EC2 (CI runners) |
 | **Reporting** | Allure Report published to GitHub Pages on every run |
-| **Frameworks** | TestNG (parallel execution) + JUnit 5 |
+| **Frameworks** | TestNG (sequential execution) + JUnit 5 |
 
 ---
 
@@ -128,7 +128,7 @@ shopsphere-qa-suite/
 │           │   └── runners/
 │           │       ├── SmokeTestRunner.java
 │           │       ├── SanityTestRunner.java
-│           │       ├── RegressionTestRunner.java  ← parallel=true
+│           │       ├── RegressionTestRunner.java  ← parallel=false (sequential for CI stability)
 │           │       ├── E2ETestRunner.java
 │           │       └── UATTestRunner.java
 │           └── resources/
@@ -138,7 +138,7 @@ shopsphere-qa-suite/
 │               │   ├── checkout.feature      ← @e2e full purchase flow
 │               │   └── uat.feature           ← @uat business sign-off
 │               ├── testng-smoke.xml
-│               └── testng-regression.xml     ← parallel threads=3
+│               └── testng-regression.xml     ← sequential (parallel=none)
 │
 ├── mobile-tests/                             ← Appium + Cucumber
 │   └── src/
@@ -239,7 +239,7 @@ mvn test -pl core
 # Web Smoke Tests
 mvn test -pl web-tests -Dcucumber.filter.tags="@smoke"
 
-# Web Regression (parallel, all browsers)
+# Web Regression (all browsers)
 mvn test -pl web-tests -Dcucumber.filter.tags="@regression" -Dbrowser=chrome
 
 # Web E2E Tests
@@ -381,7 +381,7 @@ mvn test -pl mobile-tests \
 | **Unit** | — | JUnit 5 | Every build (core module) |
 | **Smoke** | `@smoke` | SmokeTestRunner | Every PR & deploy |
 | **Sanity** | `@sanity` | SanityTestRunner | Post-deployment |
-| **Regression** | `@regression` | RegressionTestRunner | Nightly (parallel) |
+| **Regression** | `@regression` | RegressionTestRunner | Nightly (sequential) |
 | **Integration** | `@api` | ApiRegressionRunner | Nightly |
 | **E2E** | `@e2e` | E2ETestRunner | Nightly |
 | **UAT** | `@uat` | UATTestRunner | Release cycles |
@@ -580,7 +580,7 @@ Java • Selenium • Playwright • Cypress • RestAssured • Python • CI/C
 
 <div align="center">
 
-*Built to demonstrate full-stack QA automation capability for SDET and QA Automation Engineer roles*
+*Built to demonstrate full-stack QA automation capability for SDET and QA Automation Engineer roles*  
 This project is tested with BrowserStack
 
 </div>
