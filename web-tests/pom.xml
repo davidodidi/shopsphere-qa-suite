@@ -10,7 +10,11 @@
     <artifactId>web-tests</artifactId>
 
     <properties>
-        <!-- Default suite runs smoke tests. Override via -DsuiteXmlFile=... on the command line. -->
+        <!--
+            Default suite: smoke tests via SmokeTestRunner.
+            Override on the command line for other stages, e.g.:
+              -DsuiteXmlFile=src/test/resources/testng-regression.xml
+        -->
         <suiteXmlFile>src/test/resources/testng-smoke.xml</suiteXmlFile>
     </properties>
 
@@ -38,6 +42,7 @@
         <dependency><groupId>org.apache.logging.log4j</groupId><artifactId>log4j-api</artifactId></dependency>
         <dependency><groupId>org.apache.logging.log4j</groupId><artifactId>log4j-core</artifactId></dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
