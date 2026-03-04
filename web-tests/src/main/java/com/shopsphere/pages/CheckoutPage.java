@@ -33,12 +33,16 @@ public class CheckoutPage extends BasePage {
 
     @Step("Filling checkout info: {firstName} {lastName} {postalCode}")
     public CheckoutPage fillCheckoutInfo(String firstName, String lastName, String postalCode) {
-        // SauceDemo runs React 17. React 17 changed how it tracks controlled input state.
-        // Setting element.value via nativeInputValueSetter + plain Event('input') works
-        // for React 16 but is ignored by React 17's fiber reconciler.
-        // React 17 requires a native InputEvent with inputType and data properties set,
-        // which matches what the browser fires on real keyboard input.
-        // Verified in browser console: this approach navigates to step-two on click.
+        // Wait for the first name field to be fully clickable before setting values.
+        // waitForUrlToContain("checkout-step-one") in CartPage confirms the HTML has
+        // arrived, but React mounts its fiber and attaches event handlers asynchronously
+        // after the DOM is painted. Under load (e.g. after 20+ sequential scenarios),
+        // this mount can take longer than usual. waitForClickable blocks until the
+        // element is both visible and enabled, which is the closest proxy for
+        // "React has finished mounting controlled inputs on this form".
+        // Without this wait, reactSetValue fires before React's fiber is ready and
+        // the InputEvent is dropped, leaving fields empty at submit time.
+        WaitUtils.waitForClickable(firstNameField);
         reactSetValue(firstNameField, firstName);
         reactSetValue(lastNameField, lastName);
         reactSetValue(postalCodeField, postalCode);
@@ -87,15 +91,13 @@ public class CheckoutPage extends BasePage {
      * Sets a value on a React 17 controlled input.
      *
      * React 17 tracks input state via its fiber reconciler and ignores direct
-     * DOM property writes. It also ignores plain Event('input') dispatches.
-     * What React 17 DOES recognise is a native InputEvent with inputType and
-     * data set — this matches what Chrome fires on real keyboard input and hooks
-     * into React's synthetic event system, updating the fiber state so the value
-     * is present when the form submits.
+     * DOM property writes and plain Event('input') dispatches.
+     * A native InputEvent with inputType='insertText' and data set matches what
+     * Chrome fires on real keyboard input, hooking into React's synthetic event
+     * system and updating fiber state so the value persists at submit time.
      *
      * Verified against SauceDemo checkout page in Chrome 145 console:
-     * nativeInputValueSetter + InputEvent('input', inputType='insertText', data=value)
-     * successfully populates all three fields and allows form submission to step-two.
+     * all three fields populated and form navigated to step-two on click.
      */
     private void reactSetValue(WebElement field, String value) {
         WaitUtils.waitForVisibility(field);
