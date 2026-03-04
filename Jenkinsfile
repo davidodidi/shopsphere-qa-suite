@@ -13,7 +13,6 @@ pipeline {
         JAVA_HOME    = tool 'JDK-11'
         MAVEN_HOME   = tool 'Maven-3.9'
         PATH         = "${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${env.PATH}"
-        GRID_URL     = "http://selenium-hub:4444/wd/hub"
         ALLURE_HOME  = tool 'Allure-2.24'
     }
 
@@ -89,7 +88,6 @@ pipeline {
                             mvn test -pl web-tests \
                                 -Dcucumber.filter.tags="@smoke" \
                                 -Dbrowser=${params.BROWSER} \
-                                -Dgrid.url=${env.GRID_URL} \
                                 -Denv=${params.ENV} \
                                 --no-transfer-progress
                         """
@@ -107,7 +105,6 @@ pipeline {
                             mvn test -pl web-tests \
                                 -Dcucumber.filter.tags="@sanity" \
                                 -Dbrowser=${params.BROWSER} \
-                                -Dgrid.url=${env.GRID_URL} \
                                 -Denv=${params.ENV} \
                                 --no-transfer-progress
                         """
@@ -133,7 +130,6 @@ pipeline {
                     mvn test -pl web-tests \
                         -Dcucumber.filter.tags="@e2e" \
                         -Dbrowser=${params.BROWSER} \
-                        -Dgrid.url=${env.GRID_URL} \
                         -Denv=${params.ENV} \
                         --no-transfer-progress
                 """
@@ -152,7 +148,6 @@ pipeline {
                     mvn test -pl web-tests \
                         -Dcucumber.filter.tags="@uat" \
                         -Dbrowser=${params.BROWSER} \
-                        -Dgrid.url=${env.GRID_URL} \
                         -Denv=${params.ENV} \
                         --no-transfer-progress
                 """
