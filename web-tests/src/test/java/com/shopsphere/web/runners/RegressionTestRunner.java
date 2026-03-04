@@ -4,10 +4,6 @@ import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;
 import org.testng.annotations.DataProvider;
 
-/**
- * Regression Test Runner — full suite, runs nightly on CI.
- * Parallel execution for speed.
- */
 @CucumberOptions(
         features  = "src/test/resources/features",
         glue      = {"com.shopsphere.web.stepdefs", "com.shopsphere.web.hooks"},
@@ -22,6 +18,6 @@ import org.testng.annotations.DataProvider;
 )
 public class RegressionTestRunner extends AbstractTestNGCucumberTests {
     @Override
-    @DataProvider(parallel = true)
+    @DataProvider(parallel = false)
     public Object[][] scenarios() { return super.scenarios(); }
 }

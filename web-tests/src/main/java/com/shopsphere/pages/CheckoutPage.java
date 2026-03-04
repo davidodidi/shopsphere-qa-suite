@@ -2,6 +2,7 @@ package com.shopsphere.pages;
 
 import com.shopsphere.utils.WaitUtils;
 import io.qameta.allure.Step;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -40,14 +41,30 @@ public class CheckoutPage extends BasePage {
 
     @Step("Clicking continue")
     public CheckoutPage clickContinue() {
+        // #continue is <input type="submit"> inside a <form>.
+        // jsClick(element) fires a DOM click event but headless Chrome does NOT
+        // propagate that into a form submission — the URL never changes.
+        // We must invoke form.submit() directly via JavaScript.
+        WaitUtils.waitForVisibility(continueButton);
+        ((JavascriptExecutor) driver).executeScript(
+            "arguments[0].closest('form').submit();", continueButton);
+        WaitUtils.waitForUrlToContain("checkout-step-two");
+        return this;
+    }
+
+    @Step("Clicking continue expecting validation error")
+    public CheckoutPage clickContinueExpectingError() {
+        // For the empty-fields validation scenario we use jsClick so the browser
+        // stays on the page and SauceDemo's own error message is shown.
         scrollToElement(continueButton);
         jsClick(continueButton);
-        WaitUtils.waitForUrlToContain("checkout-step-two");
         return this;
     }
 
     @Step("Finishing order")
     public CheckoutPage finishOrder() {
+        // #finish is also a button but it is NOT a form submit input on step-two —
+        // it is a regular <button> / anchor, so jsClick is correct here.
         scrollToElement(finishButton);
         jsClick(finishButton);
         WaitUtils.waitForUrlToContain("checkout-complete");

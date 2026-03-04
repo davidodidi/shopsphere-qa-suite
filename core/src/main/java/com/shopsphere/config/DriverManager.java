@@ -14,12 +14,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Duration;
 
-/**
- * Thread-safe DriverManager using ThreadLocal.
- * Supports local Chrome/Firefox/Edge and Selenium Grid (Docker).
- */
 public class DriverManager {
     private static final Logger log = LogManager.getLogger(DriverManager.class);
     private static final ThreadLocal<WebDriver> driverThread = new ThreadLocal<>();
@@ -52,8 +47,16 @@ public class DriverManager {
             throw new RuntimeException("Failed to initialise WebDriver", e);
         }
 
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(config.getImplicitWait()));
+        // maximize() hangs in headless Docker/WSL2 for up to 180s then crashes
+        // the Chrome process. Window size is already set via --window-size flag.
+        if (!headless) {
+            driver.manage().window().maximize();
+        }
+
+        // Implicit wait intentionally removed — it conflicts with WebDriverWait
+        // explicit waits in WaitUtils and causes unpredictable timing behaviour.
+        // All synchronisation is handled exclusively by WaitUtils.
+
         driverThread.set(driver);
     }
 
@@ -71,8 +74,17 @@ public class DriverManager {
         } else {
             WebDriverManager.chromedriver().setup();
             ChromeOptions opts = new ChromeOptions();
-            if (headless) opts.addArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage");
-            opts.addArguments("--window-size=1920,1080");
+            if (headless) {
+                opts.addArguments(
+                    "--headless=new",
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--window-size=1920,1080"
+                );
+            } else {
+                opts.addArguments("--window-size=1920,1080");
+            }
             return new ChromeDriver(opts);
         }
     }
@@ -89,7 +101,15 @@ public class DriverManager {
             return new RemoteWebDriver(new URL(gridUrl), opts);
         } else {
             ChromeOptions opts = new ChromeOptions();
-            if (headless) opts.addArguments("--headless=new", "--no-sandbox");
+            if (headless) {
+                opts.addArguments(
+                    "--headless=new",
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--window-size=1920,1080"
+                );
+            }
             return new RemoteWebDriver(new URL(gridUrl), opts);
         }
     }

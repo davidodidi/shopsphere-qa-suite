@@ -46,7 +46,9 @@ public class CheckoutSteps {
 
     @When("I click continue without filling in checkout information")
     public void iClickContinueWithoutInfo() {
-        ctx.checkoutPage.clickContinue();
+        // Use the error-expecting variant so the form stays on step-one
+        // and SauceDemo's own validation error message is shown.
+        ctx.checkoutPage.clickContinueExpectingError();
     }
 
     @Then("I should see an error message about required fields")
