@@ -1,5 +1,6 @@
 package com.shopsphere.pages;
 
+import com.shopsphere.utils.WaitUtils;
 import io.qameta.allure.Step;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -39,13 +40,17 @@ public class CheckoutPage extends BasePage {
 
     @Step("Clicking continue")
     public CheckoutPage clickContinue() {
-        click(continueButton);
+        scrollToElement(continueButton);
+        jsClick(continueButton);
+        WaitUtils.waitForUrlToContain("checkout-step-two");
         return this;
     }
 
     @Step("Finishing order")
     public CheckoutPage finishOrder() {
-        click(finishButton);
+        scrollToElement(finishButton);
+        jsClick(finishButton);
+        WaitUtils.waitForUrlToContain("checkout-complete");
         return this;
     }
 
