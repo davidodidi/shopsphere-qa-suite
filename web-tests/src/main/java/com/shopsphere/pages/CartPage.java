@@ -15,12 +15,21 @@ public class CartPage extends BasePage {
     private WebElement continueShoppingButton;
     public CartPage() { super(); }
     @Step("Proceeding to checkout")
-    public CheckoutPage proceedToCheckout() {
-        WaitUtils.waitForClickable(By.id("checkout")).click();
-        WaitUtils.waitForUrlToContain("checkout-step-one");
-        WaitUtils.waitForVisibility(By.id("first-name"));
-        return new CheckoutPage();
+public CheckoutPage proceedToCheckout() {
+
+    WebElement button = WaitUtils.waitForClickable(By.id("checkout"));
+
+    try {
+        button.click();
+    } catch (Exception e) {
+        jsClick(button);
     }
+
+    // Wait for checkout page element instead of URL
+    WaitUtils.waitForVisibility(By.id("first-name"));
+
+    return new CheckoutPage();
+}
     public List<String> getCartItemNames() {
         return cartItems.stream()
                 .map(item -> item.findElement(By.cssSelector(".inventory_item_name")).getText())
