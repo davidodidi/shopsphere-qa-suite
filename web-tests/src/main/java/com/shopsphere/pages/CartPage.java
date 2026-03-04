@@ -5,6 +5,7 @@ import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,14 @@ public class CartPage extends BasePage {
         scrollToElement(checkoutButton);
         jsClick(checkoutButton);
         WaitUtils.waitForUrlToContain("checkout-step-one");
+        // Wait for the first-name field to be present and visible in the DOM
+        // before constructing CheckoutPage. jsClick() bypasses normal browser
+        // focus/navigation events, so the URL changes before React has fully
+        // rendered the checkout form. PageFactory.initElements() in the
+        // CheckoutPage constructor binds proxies immediately — if the DOM is
+        // not ready those proxies resolve to non-existent elements and all
+        // sendKeys() calls silently do nothing.
+        WaitUtils.waitForVisibility(By.id("first-name"));
         return new CheckoutPage();
     }
 

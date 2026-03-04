@@ -2,7 +2,6 @@ package com.shopsphere.pages;
 
 import com.shopsphere.utils.WaitUtils;
 import io.qameta.allure.Step;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -33,14 +32,13 @@ public class CheckoutPage extends BasePage {
 
     @Step("Filling checkout info: {firstName} {lastName} {postalCode}")
     public CheckoutPage fillCheckoutInfo(String firstName, String lastName, String postalCode) {
-        // React 17 controlled inputs: element.clear() fires a change event that
-        // React uses to reset its internal state, leaving the field empty even
-        // after sendKeys(). Replacing clear() with click() + CTRL+A selects all
-        // existing text without triggering React's reset, then sendKeys() types
-        // the new value and React's onChange fires correctly with the full string.
-        typeReact(firstNameField, firstName);
-        typeReact(lastNameField, lastName);
-        typeReact(postalCodeField, postalCode);
+        // BasePage.type() calls element.clear() + element.sendKeys().
+        // This works correctly now that CartPage.proceedToCheckout() waits for
+        // the first-name field to be visible before constructing CheckoutPage,
+        // ensuring PageFactory proxies resolve to real DOM elements.
+        type(firstNameField, firstName);
+        type(lastNameField, lastName);
+        type(postalCodeField, postalCode);
         return this;
     }
 
@@ -80,25 +78,5 @@ public class CheckoutPage extends BasePage {
     @Override
     public boolean isLoaded() {
         return driver.getCurrentUrl().contains("checkout");
-    }
-
-    /**
-     * Types into a React 17 controlled input without using clear().
-     *
-     * element.clear() fires a DOM change event that React intercepts and uses
-     * to reset its internal fiber state to empty string — so any subsequent
-     * sendKeys() call types into a field React considers already-reset, and the
-     * value never propagates correctly to React's state.
-     *
-     * Instead: click to focus, CTRL+A to select all existing text (no React
-     * reset event), then sendKeys(value) replaces the selection. React's
-     * onChange fires once with the complete new value and updates fiber state
-     * correctly. This works in all environments including headless Chrome in a
-     * container with no display server, because sendKeys() goes through the
-     * WebDriver wire protocol directly.
-     */
-    private void typeReact(WebElement field, String value) {
-        WaitUtils.waitForClickable(field).click();
-        field.sendKeys(Keys.chord(Keys.CONTROL, "a"), value);
     }
 }
