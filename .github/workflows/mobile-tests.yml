@@ -41,12 +41,13 @@ jobs:
         shell: pwsh
         run: |
           $sdkmanager = "${env:ANDROID_HOME}\cmdline-tools\latest\bin\sdkmanager.bat"
-          & $sdkmanager "platform-tools" "platforms;android-35" "system-images;android-35;google_apis;x86_64"
+          & $sdkmanager "platform-tools" "platforms;android-35" "system-images;android-35;google_apis;x86_64" "cmdline-tools;latest"
 
       - name: Create Android Emulator
         shell: pwsh
         run: |
-          & "${env:ANDROID_HOME}\emulator\bin\avdmanager.bat" create avd -n Pixel_6_API_35 -k "system-images;android-35;google_apis;x86_64" -d pixel_6 --force
+          $avdmanager = "${env:ANDROID_HOME}\cmdline-tools\latest\bin\avdmanager.bat"
+          & $avdmanager create avd -n Pixel_6_API_35 -k "system-images;android-35;google_apis;x86_64" -d pixel_6 --force
 
       - name: Start Emulator
         shell: pwsh
