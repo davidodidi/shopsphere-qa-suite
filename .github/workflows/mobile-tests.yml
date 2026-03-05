@@ -1,4 +1,4 @@
-name: 📱 Mobile Tests — Android Emulator
+name: 📱 Mobile Tests — Windows Android Emulator
 
 on:
   workflow_dispatch:
@@ -6,23 +6,15 @@ on:
     - cron: '0 3 * * 1-5'
 
 jobs:
-  mobile-android:
+  mobile-android-windows:
     name: 📱 Android Mobile Tests (Pixel 6 API 35)
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 60
 
     steps:
-      # Install Git to avoid tar errors
-      - name: Install Git
-        run: sudo apt-get update && sudo apt-get install -y git
-
-      # Checkout full repo
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      # Setup Java for Maven and Android SDK
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
@@ -30,33 +22,23 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Set up Java 11
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-
-      # Node.js for Appium
-      - name: Set up Node.js
+      - name: Set up Node.js (for Appium)
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # Install Appium and UIAutomator2
-      - name: Install Appium
+      - name: Install Appium + UIAutomator2
         run: |
           npm install -g appium@3.2.0
           appium driver install uiautomator2
           appium --version
 
-      # Build core modules
-      - name: Build parent + core
+      - name: Accept Android SDK licenses
+        shell: pwsh
         run: |
-          mvn install -N -DskipTests --no-transfer-progress
-          mvn install -pl core -DskipTests --no-transfer-progress
+          & "${env:ANDROID_HOME}\tools\bin\sdkmanager.bat" --licenses | ForEach-Object {$_; }
 
-      # Pre-launch emulator
-      - name: Pre-launch Android Emulator
+      - name: Pre-launch Pixel 6 Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -64,79 +46,47 @@ jobs:
           arch: x86_64
           profile: pixel_6
           avd-name: Pixel_6_API_35
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           disable-animations: true
           emulator-boot-timeout: 300
           force-avd-creation: true
           cores: 2
           script: echo "Emulator ready"
 
-      # Start Appium server
       - name: Start Appium server in background
+        shell: pwsh
         run: |
-          appium --log appium.log &
-          timeout 30 bash -c 'until curl -s http://127.0.0.1:4723/status > /dev/null; do sleep 2; done'
-          echo "Appium is ready"
+          Start-Process -NoNewWindow -FilePath "appium" -ArgumentList "--log appium.log"
+          Start-Sleep -Seconds 15
+          Write-Output "Appium should be ready now"
 
-      # Run mobile tests with retry
       - name: Run mobile tests
+        shell: pwsh
         run: |
-          MAX_RETRIES=3
-          COUNT=0
-          SUCCESS=0
+          mvn test -pl mobile-tests `
+            -Dplatform=android `
+            -Dappium.server=http://127.0.0.1:4723 `
+            -Dapp.path="${{ github.workspace }}\mobile-tests\src\test\resources\apps\SauceLabs.apk" `
+            -Ddevice.name="Pixel_6_API_35" `
+            -Dplatform.version="15" `
+            -Dcucumber.filter.tags="@mobile" `
+            --no-transfer-progress
 
-          while [ $COUNT -lt $MAX_RETRIES ]; do
-            echo "Attempt $((COUNT+1)) of $MAX_RETRIES..."
-            pkill -f appium || true
-            appium --log appium.log &
-            sleep 5
-
-            mvn test -pl mobile-tests \
-              -Dplatform=android \
-              -Dappium.server=http://127.0.0.1:4723 \
-              -Dapp.path="${GITHUB_WORKSPACE}/mobile-tests/src/test/resources/apps/SauceLabs.apk" \
-              -Ddevice.name="Pixel_6_API_35" \
-              -Dplatform.version="15" \
-              -Dcucumber.filter.tags="@mobile" \
-              --no-transfer-progress
-
-            EXIT_CODE=$?
-            if [ $EXIT_CODE -eq 0 ]; then
-              SUCCESS=1
-              break
-            else
-              echo "Tests failed. Retrying after 10s..."
-              sleep 10
-              COUNT=$((COUNT+1))
-            fi
-          done
-
-          if [ $SUCCESS -ne 1 ]; then
-            echo "❌ All $MAX_RETRIES attempts failed."
-            exit 1
-          fi
-
-      # Upload logs and reports
       - name: Upload Appium logs on failure
         uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: appium-logs
           path: appium.log
-          if-no-files-found: warn
 
       - name: Upload Allure results
         uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: allure-results-mobile
           path: mobile-tests/target/allure-results/
-          if-no-files-found: warn
 
       - name: Upload Surefire reports
         uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: mobile-surefire-reports
           path: mobile-tests/target/surefire-reports/
-          if-no-files-found: warn
