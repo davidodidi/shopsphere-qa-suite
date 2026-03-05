@@ -1,20 +1,20 @@
 package com.shopsphere.screens;
+
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
+import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import io.appium.java_client.pagefactory.iOSXCUITFindBy;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.PointerInput;
-import org.openqa.selenium.interactions.Sequence;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.time.Duration;
-import java.util.List;
 
 public class CheckoutScreen extends BaseScreen {
+
     @AndroidFindBy(accessibility = "test-First Name")
     @iOSXCUITFindBy(accessibility = "test-First Name")
     private WebElement firstNameField;
@@ -39,7 +39,10 @@ public class CheckoutScreen extends BaseScreen {
     @iOSXCUITFindBy(xpath = "//XCUIElementTypeStaticText[@name='test-Error message']")
     private WebElement errorMessage;
 
-    public CheckoutScreen(AppiumDriver driver) { super(driver); }
+    public CheckoutScreen(AppiumDriver driver) {
+        super(driver);
+        PageFactory.initElements(new AppiumFieldDecorator(driver, Duration.ofSeconds(15)), this);
+    }
 
     @Step("Filling mobile checkout info")
     public CheckoutScreen fillInfo(String firstName, String lastName, String postalCode) {
@@ -57,7 +60,6 @@ public class CheckoutScreen extends BaseScreen {
 
     @Step("Scrolling down and tapping finish")
     public CheckoutScreen tapFinish() {
-        // FINISH is below the fold — scroll twice to ensure we reach it
         scrollDown();
         scrollDown();
         try {
@@ -85,7 +87,7 @@ public class CheckoutScreen extends BaseScreen {
     }
 
     public boolean isErrorDisplayed() { return isDisplayed(errorMessage); }
-    public String getErrorMessage() { return getText(errorMessage); }
+    public String getErrorMessage()    { return getText(errorMessage); }
 
     @Override
     public boolean isLoaded() { return isDisplayed(firstNameField); }

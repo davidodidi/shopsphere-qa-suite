@@ -65,6 +65,38 @@ public abstract class BaseScreen {
     }
 
     /**
+     * Scrolls down by swiping from 75% to 25% of the screen height.
+     * Used by CartScreen and CheckoutScreen to reveal below-the-fold elements.
+     */
+    protected void scrollDown() {
+        try {
+            Dimension size = driver.manage().window().getSize();
+            int startX = size.width / 2;
+            int startY = (int) (size.height * 0.75);
+            int endY   = (int) (size.height * 0.25);
+
+            org.openqa.selenium.interactions.PointerInput finger =
+                new org.openqa.selenium.interactions.PointerInput(
+                    org.openqa.selenium.interactions.PointerInput.Kind.TOUCH, "finger");
+            org.openqa.selenium.interactions.Sequence swipe =
+                new org.openqa.selenium.interactions.Sequence(finger, 1);
+
+            swipe.addAction(finger.createPointerMove(Duration.ZERO,
+                org.openqa.selenium.interactions.PointerInput.Origin.viewport(), startX, startY));
+            swipe.addAction(finger.createPointerDown(
+                org.openqa.selenium.interactions.PointerInput.MouseButton.LEFT.asArg()));
+            swipe.addAction(finger.createPointerMove(Duration.ofMillis(600),
+                org.openqa.selenium.interactions.PointerInput.Origin.viewport(), startX, endY));
+            swipe.addAction(finger.createPointerUp(
+                org.openqa.selenium.interactions.PointerInput.MouseButton.LEFT.asArg()));
+
+            driver.perform(java.util.List.of(swipe));
+        } catch (Exception e) {
+            log.warn("scrollDown() failed: {}", e.getMessage());
+        }
+    }
+
+    /**
      * Subclasses must implement this to verify the screen has fully loaded.
      */
     public abstract boolean isLoaded();
