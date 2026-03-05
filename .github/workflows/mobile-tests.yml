@@ -13,6 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Java for Maven + Android tools
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
@@ -20,17 +21,20 @@ jobs:
           java-version: 17
           cache: maven
 
+      # Node required for Appium
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
+      # Install Appium
       - name: Install Appium & UIAutomator2
         run: |
           npm install -g appium@3.2.0
           appium driver install uiautomator2
           appium --version
 
+      # Enable hardware acceleration for emulator
       - name: Enable KVM (required for Android emulator)
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | \
@@ -38,18 +42,20 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      # Build project dependencies
       - name: Build Maven modules
         run: |
-          mvn install -N -DskipTests --no-transfer-progress
-          mvn install -pl core -DskipTests --no-transfer-progress
+          mvn install -DskipTests --no-transfer-progress
 
+      # Start Appium server
       - name: Start Appium
         run: |
           appium --log appium.log &
-          echo "Waiting for Appium..."
-          timeout 30 bash -c 'until curl -s http://127.0.0.1:4723/status > /dev/null; do sleep 2; done'
-          echo "Appium ready"
+          echo "Waiting for Appium server..."
+          timeout 40 bash -c 'until curl -s http://127.0.0.1:4723/status > /dev/null; do sleep 2; done'
+          echo "Appium server ready"
 
+      # Start emulator and run tests
       - name: Run Android Emulator + Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -61,15 +67,9 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           disable-animations: true
           script: |
-            mvn test -pl mobile-tests \
-              -Dplatform=android \
-              -Dappium.server=http://127.0.0.1:4723 \
-              -Dapp.path="${GITHUB_WORKSPACE}/mobile-tests/src/test/resources/apps/SauceLabs.apk" \
-              -Ddevice.name="Pixel_6_API_35" \
-              -Dplatform.version="15" \
-              -Dcucumber.filter.tags="@mobile" \
-              --no-transfer-progress
+            mvn test -pl mobile-tests -Dplatform=android -Dappium.server=http://127.0.0.1:4723 -Dapp.path=$GITHUB_WORKSPACE/mobile-tests/src/test/resources/apps/SauceLabs.apk -Ddevice.name=Pixel_6_API_35 -Dplatform.version=15 -Dcucumber.filter.tags=@mobile --no-transfer-progress
 
+      # Upload Appium logs if failure
       - name: Upload Appium logs
         if: failure()
         uses: actions/upload-artifact@v4
@@ -77,6 +77,7 @@ jobs:
           name: appium-logs
           path: appium.log
 
+      # Upload Allure test results
       - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4
@@ -84,6 +85,7 @@ jobs:
           name: allure-results-mobile
           path: mobile-tests/target/allure-results/
 
+      # Upload Maven Surefire reports
       - name: Upload Surefire reports
         if: always()
         uses: actions/upload-artifact@v4
