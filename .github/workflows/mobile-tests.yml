@@ -13,7 +13,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Java for Maven + Android tools
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
@@ -21,20 +20,17 @@ jobs:
           java-version: 17
           cache: maven
 
-      # Node required for Appium
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      # Install Appium
       - name: Install Appium & UIAutomator2
         run: |
           npm install -g appium@3.2.0
           appium driver install uiautomator2
           appium --version
 
-      # Enable hardware acceleration for emulator
       - name: Enable KVM (required for Android emulator)
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | \
@@ -42,12 +38,9 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      # Build project dependencies
       - name: Build Maven modules
-        run: |
-          mvn install -DskipTests --no-transfer-progress
+        run: mvn install -DskipTests --no-transfer-progress
 
-      # Start Appium server
       - name: Start Appium
         run: |
           appium --log appium.log &
@@ -55,7 +48,6 @@ jobs:
           timeout 40 bash -c 'until curl -s http://127.0.0.1:4723/status > /dev/null; do sleep 2; done'
           echo "Appium server ready"
 
-      # Start emulator and run tests
       - name: Run Android Emulator + Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -66,10 +58,35 @@ jobs:
           avd-name: Pixel_6_API_35
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           disable-animations: true
+          # FIX: Wait for emulator to be fully booted before running tests.
+          # The previous script ran Maven immediately — the emulator boot had not
+          # completed, so the app never reached the login screen, causing all 9
+          # tests to fail at iAmOnLoginPage with "login screen should be loaded = false".
           script: |
-            mvn test -pl mobile-tests -Dplatform=android -Dappium.server=http://127.0.0.1:4723 -Dapp.path=$GITHUB_WORKSPACE/mobile-tests/src/test/resources/apps/SauceLabs.apk -Ddevice.name=Pixel_6_API_35 -Dplatform.version=15 -Dcucumber.filter.tags=@mobile --no-transfer-progress
+            echo "Waiting for emulator boot to complete..."
+            adb wait-for-device
+            # Poll sys.boot_completed until it returns 1
+            until adb shell getprop sys.boot_completed 2>/dev/null | grep -q '1'; do
+              echo "  still booting..."; sleep 3
+            done
+            echo "Boot completed. Waiting for package manager to be ready..."
+            # Ensure package manager is responsive before launching the app
+            until adb shell pm path android 2>/dev/null | grep -q 'package:'; do
+              echo "  waiting for package manager..."; sleep 2
+            done
+            # Extra settle time for the UI layer / launcher to be stable
+            sleep 5
+            echo "Emulator fully ready. Starting tests."
+            mvn test \
+              -pl mobile-tests \
+              -Dplatform=android \
+              -Dappium.server=http://127.0.0.1:4723 \
+              -Dapp.path=$GITHUB_WORKSPACE/mobile-tests/src/test/resources/apps/SauceLabs.apk \
+              -Ddevice.name=Pixel_6_API_35 \
+              -Dplatform.version=15 \
+              -Dcucumber.filter.tags=@mobile \
+              --no-transfer-progress
 
-      # Upload Appium logs if failure
       - name: Upload Appium logs
         if: failure()
         uses: actions/upload-artifact@v4
@@ -77,7 +94,6 @@ jobs:
           name: appium-logs
           path: appium.log
 
-      # Upload Allure test results
       - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4
@@ -85,7 +101,6 @@ jobs:
           name: allure-results-mobile
           path: mobile-tests/target/allure-results/
 
-      # Upload Maven Surefire reports
       - name: Upload Surefire reports
         if: always()
         uses: actions/upload-artifact@v4

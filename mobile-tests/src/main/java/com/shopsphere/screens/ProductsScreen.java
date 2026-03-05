@@ -2,15 +2,22 @@ package com.shopsphere.screens;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
+import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import io.appium.java_client.pagefactory.iOSXCUITFindBy;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.time.Duration;
 import java.util.List;
 
+/**
+ * FIX: Added PageFactory.initElements() with AppiumFieldDecorator — same root
+ * cause fix as LoginScreen. Without it @AndroidFindBy fields are null.
+ */
 public class ProductsScreen extends BaseScreen {
 
     @AndroidFindBy(accessibility = "test-PRODUCTS")
@@ -25,7 +32,11 @@ public class ProductsScreen extends BaseScreen {
     @iOSXCUITFindBy(accessibility = "test-Cart")
     private WebElement cartButton;
 
-    public ProductsScreen(AppiumDriver driver) { super(driver); }
+    public ProductsScreen(AppiumDriver driver) {
+        super(driver);
+        // CRITICAL FIX: same as LoginScreen — must init annotated fields.
+        PageFactory.initElements(new AppiumFieldDecorator(driver, Duration.ofSeconds(15)), this);
+    }
 
     public String getHeaderText() { return getText(productsHeader); }
     public int getProductCount()  { return productItems.size(); }
@@ -33,7 +44,6 @@ public class ProductsScreen extends BaseScreen {
     @Step("Adding product at index {index} to cart")
     public ProductsScreen addProductToCartByIndex(int index) {
         try {
-            // Wait until at least one ADD TO CART button is visible
             new WebDriverWait(driver, Duration.ofSeconds(20))
                 .until(ExpectedConditions.presenceOfElementLocated(
                     By.xpath("//android.view.ViewGroup[@content-desc='test-ADD TO CART']")));
@@ -47,7 +57,6 @@ public class ProductsScreen extends BaseScreen {
                 addToCartButtons.get(index).click();
                 log.info("Tapped ADD TO CART at index {}", index);
 
-                // Wait for button to change to REMOVE confirming the tap registered
                 new WebDriverWait(driver, Duration.ofSeconds(10))
                     .until(ExpectedConditions.presenceOfElementLocated(
                         By.xpath("//android.view.ViewGroup[@content-desc='test-REMOVE']")));
