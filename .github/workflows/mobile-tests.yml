@@ -1,9 +1,7 @@
-name: 📱 Mobile Tests — Windows Android Emulator
+name: 📱 Mobile Tests — Android Emulator (Windows)
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 3 * * 1-5'
 
 jobs:
   mobile-android-windows:
@@ -15,50 +13,57 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      - name: Set up Java 17 (required for Android SDK / Appium)
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: maven
+          distribution: temurin
+          java-version: 17
 
-      - name: Set up Node.js (for Appium)
+      - name: Set up Node.js (required for Appium)
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Install Appium + UIAutomator2
+      - name: Install Appium & UIAutomator2 driver
         run: |
           npm install -g appium@3.2.0
           appium driver install uiautomator2
           appium --version
+        shell: pwsh
 
       - name: Accept Android SDK licenses
         shell: pwsh
         run: |
-          & "${env:ANDROID_HOME}\tools\bin\sdkmanager.bat" --licenses | ForEach-Object {$_; }
+          $sdkmanager = "${env:ANDROID_HOME}\cmdline-tools\latest\bin\sdkmanager.bat"
+          & $sdkmanager --licenses | ForEach-Object { $_; }
 
-      - name: Pre-launch Pixel 6 Emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 35
-          target: google_apis
-          arch: x86_64
-          profile: pixel_6
-          avd-name: Pixel_6_API_35
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-          disable-animations: true
-          emulator-boot-timeout: 300
-          force-avd-creation: true
-          cores: 2
-          script: echo "Emulator ready"
+      - name: Install required Android SDK packages
+        shell: pwsh
+        run: |
+          $sdkmanager = "${env:ANDROID_HOME}\cmdline-tools\latest\bin\sdkmanager.bat"
+          & $sdkmanager "platform-tools" "platforms;android-35" "system-images;android-35;google_apis;x86_64"
+
+      - name: Create Android Emulator
+        shell: pwsh
+        run: |
+          & "${env:ANDROID_HOME}\emulator\bin\avdmanager.bat" create avd -n Pixel_6_API_35 -k "system-images;android-35;google_apis;x86_64" -d pixel_6 --force
+
+      - name: Start Emulator
+        shell: pwsh
+        run: |
+          Start-Process -NoNewWindow -FilePath "${env:ANDROID_HOME}\emulator\emulator.exe" -ArgumentList "-avd Pixel_6_API_35 -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim"
+          Write-Host "Waiting for emulator to boot..."
+          & "${env:ANDROID_HOME}\platform-tools\adb.exe" wait-for-device
+          & "${env:ANDROID_HOME}\platform-tools\adb.exe" shell settings put global window_animation_scale 0
+          & "${env:ANDROID_HOME}\platform-tools\adb.exe" shell settings put global transition_animation_scale 0
+          & "${env:ANDROID_HOME}\platform-tools\adb.exe" shell settings put global animator_duration_scale 0
 
       - name: Start Appium server in background
         shell: pwsh
         run: |
-          Start-Process -NoNewWindow -FilePath "appium" -ArgumentList "--log appium.log"
-          Start-Sleep -Seconds 15
-          Write-Output "Appium should be ready now"
+          Start-Process -NoNewWindow -FilePath "appium.cmd" -ArgumentList "--log appium.log"
+          Start-Sleep -Seconds 10
+          Write-Host "Appium is ready"
 
       - name: Run mobile tests
         shell: pwsh
@@ -73,20 +78,23 @@ jobs:
             --no-transfer-progress
 
       - name: Upload Appium logs on failure
-        uses: actions/upload-artifact@v4
         if: failure()
+        uses: actions/upload-artifact@v4
         with:
           name: appium-logs
           path: appium.log
+          if-no-files-found: warn
 
       - name: Upload Allure results
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-mobile
           path: mobile-tests/target/allure-results/
+          if-no-files-found: warn
 
       - name: Upload Surefire reports
         uses: actions/upload-artifact@v4
         with:
           name: mobile-surefire-reports
           path: mobile-tests/target/surefire-reports/
+          if-no-files-found: warn
