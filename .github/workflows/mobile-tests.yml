@@ -1,6 +1,8 @@
 name: 📱 Mobile Tests — Android Emulator
 
 on:
+  schedule:
+    - cron: '0 3 * * 1-5'   # 3 AM UTC Mon–Fri
   workflow_dispatch:
 
 jobs:

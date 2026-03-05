@@ -15,7 +15,7 @@
 [![Allure Report](https://img.shields.io/badge/Allure-Report-orange?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJMMiAyMmgyMEwxMiAyeiIgZmlsbD0id2hpdGUiLz48L3N2Zz4=&logoColor=white)](http://localhost:9090/job/shopsphere-qa-suite/allure/#)
 
 <!-- Static Badges -->
-[![Java](https://img.shields.io/badge/Java-11-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![Java](https://img.shields.io/badge/Java-11%2F17-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Selenium](https://img.shields.io/badge/Selenium-4.15-43B02A?logo=selenium&logoColor=white)](https://www.selenium.dev/)
 [![Appium](https://img.shields.io/badge/Appium-3.2.0-662D8C?logo=appium&logoColor=white)](http://appium.io/)
 [![Cucumber](https://img.shields.io/badge/Cucumber-7.14-23D96C?logo=cucumber&logoColor=white)](https://cucumber.io/)
@@ -173,7 +173,7 @@ shopsphere-qa-suite/
 │       ├── main/java/com/shopsphere/
 │       │   ├── config/AppiumDriverManager.java
 │       │   └── screens/
-│       │       ├── BaseScreen.java
+│       │       ├── BaseScreen.java           ← tap(), scrollDown(), isDisplayed(), PageFactory base
 │       │       ├── LoginScreen.java          ← @AndroidFindBy + @iOSXCUITFindBy
 │       │       ├── ProductsScreen.java
 │       │       ├── CartScreen.java
@@ -183,6 +183,8 @@ shopsphere-qa-suite/
 │           └── capabilities/
 │               ├── android.json
 │               └── ios.json
+│   └── scripts/
+│       └── run-mobile-tests.sh               ← Emulator boot wait + Maven test runner (called by CI)
 │
 ├── api-tests/                                ← RestAssured + Cucumber + Pact
 │   └── src/test/java/com/shopsphere/api/
@@ -226,7 +228,7 @@ shopsphere-qa-suite/
 
 ### Prerequisites
 
-- Java 11+
+- Java 11+ (Java 17 required for mobile module)
 - Maven 3.8+
 - Docker Desktop (for Selenium Grid)
 - JMeter 5.6+ (for performance tests)
@@ -315,6 +317,7 @@ docker run -e TAGS="@api" shopsphere-api-tests
 
 | Tool | Version | Notes |
 |------|---------|-------|
+| Java | 17 | Required for mobile-tests module |
 | Node.js | 20+ | Required to run Appium |
 | Appium | 3.2.0 | `npm install -g appium` |
 | UIAutomator2 driver | latest | `appium driver install uiautomator2` |
@@ -372,7 +375,7 @@ mvn test -pl mobile-tests \
 | **UAT** | `@uat` | UATTestRunner | Release cycles |
 | **Contract** | — | ProductConsumerContractTest | On API file changes |
 | **Performance** | — | JMeter plans | Weekly (Sunday 3AM UTC) |
-| **Mobile** | `@mobile` | MobileSmokeRunner | Nightly (Appium) |
+| **Mobile** | `@mobile` | MobileSmokeRunner | Nightly 3AM UTC + Manual |
 
 ### Test Pyramid
 
@@ -469,7 +472,7 @@ login.feature  (shared)
 | `regression-suite.yml` | Nightly 2AM UTC Mon–Fri | Unit → API → Web matrix (Chrome/Firefox) → E2E → Allure Pages |
 | `api-contract-tests.yml` | On API file changes | Pact consumer + artifact upload |
 | `performance-tests.yml` | Weekly Sunday 3AM UTC | JMeter smoke load + threshold check |
-| `mobile-tests.yml` | Manual + Nightly 3AM UTC Mon–Fri | Android emulator (Pixel 6 API 35) |
+| `mobile-tests.yml` | Nightly 3AM UTC Mon–Fri + Manual | Android emulator (Pixel 6 API 35) |
 
 ### Jenkins Declarative Pipeline
 
@@ -527,7 +530,7 @@ docker compose -f docker/docker-compose.yml up -d
 
 | Category | Technology | Version |
 |----------|-----------|---------|
-| Language | Java | 11 |
+| Language | Java | 11 (17 for mobile) |
 | Build | Maven (multi-module) | 3.9 |
 | Web Automation | Selenium WebDriver | 4.15.0 |
 | Driver Management | WebDriverManager | 5.6.3 |
