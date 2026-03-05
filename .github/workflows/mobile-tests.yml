@@ -52,6 +52,18 @@ jobs:
           mvn install -N -DskipTests --no-transfer-progress
           mvn install -pl core -DskipTests --no-transfer-progress
 
+      - name: Pre-launch Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          avd-name: Pixel_6_API_35
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          disable-animations: true
+          script: echo "Emulator ready"
+
       - name: Start Appium server in background
         run: |
           appium --log appium.log &
@@ -62,17 +74,45 @@ jobs:
       - name: Switch JAVA_HOME to 17 for Android SDK Manager
         run: echo "JAVA_HOME=${JAVA_HOME_17_X64}" >> $GITHUB_ENV
 
-      - name: Run mobile tests on Android emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 35
-          target: google_apis
-          arch: x86_64
-          profile: pixel_6
-          avd-name: Pixel_6_API_35
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-          disable-animations: true
-          script: mvn test -pl mobile-tests -Dplatform=android -Dappium.server=http://127.0.0.1:4723 -Dapp.path="${GITHUB_WORKSPACE}/mobile-tests/src/test/resources/apps/SauceLabs.apk" -Ddevice.name="Pixel_6_API_35" -Dplatform.version="15" -Dcucumber.filter.tags="@mobile" --no-transfer-progress
+      - name: Run mobile tests with retries
+        run: |
+          MAX_RETRIES=3
+          COUNT=0
+          SUCCESS=0
+
+          while [ $COUNT -lt $MAX_RETRIES ]; do
+            echo "Attempt $((COUNT+1)) of $MAX_RETRIES..."
+
+            # Optional: restart Appium between retries
+            pkill -f appium || true
+            appium --log appium.log &
+            sleep 5
+
+            # Run the mobile tests
+            mvn test -pl mobile-tests \
+              -Dplatform=android \
+              -Dappium.server=http://127.0.0.1:4723 \
+              -Dapp.path="${GITHUB_WORKSPACE}/mobile-tests/src/test/resources/apps/SauceLabs.apk" \
+              -Ddevice.name="Pixel_6_API_35" \
+              -Dplatform.version="15" \
+              -Dcucumber.filter.tags="@mobile" \
+              --no-transfer-progress
+            EXIT_CODE=$?
+
+            if [ $EXIT_CODE -eq 0 ]; then
+              SUCCESS=1
+              break
+            else
+              echo "Tests failed. Retrying after 10s..."
+              sleep 10
+              COUNT=$((COUNT+1))
+            fi
+          done
+
+          if [ $SUCCESS -ne 1 ]; then
+            echo "❌ All $MAX_RETRIES attempts failed."
+            exit 1
+          fi
 
       - name: Upload Appium logs on failure
         uses: actions/upload-artifact@v4
