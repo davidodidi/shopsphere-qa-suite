@@ -3,11 +3,15 @@ package com.shopsphere.screens;
 import io.appium.java_client.AppiumDriver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List;
 
 public abstract class BaseScreen {
 
@@ -75,22 +79,19 @@ public abstract class BaseScreen {
             int startY = (int) (size.height * 0.75);
             int endY   = (int) (size.height * 0.25);
 
-            org.openqa.selenium.interactions.PointerInput finger =
-                new org.openqa.selenium.interactions.PointerInput(
-                    org.openqa.selenium.interactions.PointerInput.Kind.TOUCH, "finger");
-            org.openqa.selenium.interactions.Sequence swipe =
-                new org.openqa.selenium.interactions.Sequence(finger, 1);
+            PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+            Sequence swipe = new Sequence(finger, 1);
 
             swipe.addAction(finger.createPointerMove(Duration.ZERO,
-                org.openqa.selenium.interactions.PointerInput.Origin.viewport(), startX, startY));
+                PointerInput.Origin.viewport(), startX, startY));
             swipe.addAction(finger.createPointerDown(
-                org.openqa.selenium.interactions.PointerInput.MouseButton.LEFT.asArg()));
+                PointerInput.MouseButton.LEFT.asArg()));
             swipe.addAction(finger.createPointerMove(Duration.ofMillis(600),
-                org.openqa.selenium.interactions.PointerInput.Origin.viewport(), startX, endY));
+                PointerInput.Origin.viewport(), startX, endY));
             swipe.addAction(finger.createPointerUp(
-                org.openqa.selenium.interactions.PointerInput.MouseButton.LEFT.asArg()));
+                PointerInput.MouseButton.LEFT.asArg()));
 
-            driver.perform(java.util.List.of(swipe));
+            driver.perform(List.of(swipe));
         } catch (Exception e) {
             log.warn("scrollDown() failed: {}", e.getMessage());
         }
