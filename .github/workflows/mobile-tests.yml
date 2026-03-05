@@ -58,34 +58,10 @@ jobs:
           avd-name: Pixel_6_API_35
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           disable-animations: true
-          # FIX: Wait for emulator to be fully booted before running tests.
-          # The previous script ran Maven immediately — the emulator boot had not
-          # completed, so the app never reached the login screen, causing all 9
-          # tests to fail at iAmOnLoginPage with "login screen should be loaded = false".
-          script: |
-            echo "Waiting for emulator boot to complete..."
-            adb wait-for-device
-            # Poll sys.boot_completed until it returns 1
-            until adb shell getprop sys.boot_completed 2>/dev/null | grep -q '1'; do
-              echo "  still booting..."; sleep 3
-            done
-            echo "Boot completed. Waiting for package manager to be ready..."
-            # Ensure package manager is responsive before launching the app
-            until adb shell pm path android 2>/dev/null | grep -q 'package:'; do
-              echo "  waiting for package manager..."; sleep 2
-            done
-            # Extra settle time for the UI layer / launcher to be stable
-            sleep 5
-            echo "Emulator fully ready. Starting tests."
-            mvn test \
-              -pl mobile-tests \
-              -Dplatform=android \
-              -Dappium.server=http://127.0.0.1:4723 \
-              -Dapp.path=$GITHUB_WORKSPACE/mobile-tests/src/test/resources/apps/SauceLabs.apk \
-              -Ddevice.name=Pixel_6_API_35 \
-              -Dplatform.version=15 \
-              -Dcucumber.filter.tags=@mobile \
-              --no-transfer-progress
+          # android-emulator-runner passes script: to /usr/bin/sh line-by-line,
+          # which breaks multi-line constructs like until...do...done.
+          # The fix is a standalone bash script invoked as a single command.
+          script: bash mobile-tests/scripts/run-mobile-tests.sh
 
       - name: Upload Appium logs
         if: failure()
