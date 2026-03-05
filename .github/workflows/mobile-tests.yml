@@ -15,14 +15,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java 17 (required for Android SDK Manager)
+      - name: Set up Java 17 (for Android SDK & Emulator)
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
 
-      - name: Set up Java 11 (for Maven build — sets JAVA_HOME_11_X64)
+      - name: Set up Java 11 (for Maven build)
         uses: actions/setup-java@v4
         with:
           java-version: '11'
@@ -33,25 +33,18 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Appium 3.x and UIAutomator2 driver
+      - name: Install Appium & UIAutomator2 driver
         run: |
           npm install -g appium@3.2.0
           appium driver install uiautomator2
           appium --version
 
-      - name: Enable KVM for hardware acceleration
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-          sudo apt-get install -y cpu-checker
-          kvm-ok
-
-      - name: Build and install parent + core modules
+      - name: Build parent + core modules
         run: |
           mvn install -N -DskipTests --no-transfer-progress
           mvn install -pl core -DskipTests --no-transfer-progress
 
+      # --- Emulator step with Java 17 ---
       - name: Pre-launch Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -63,17 +56,18 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           disable-animations: true
           emulator-boot-timeout: 300
-          script: echo "Emulator ready"
+          force-avd-creation: true
+          cores: 2
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME_17_X64 }}
 
-      - name: Start Appium server in background
+      - name: Start Appium server
         run: |
+          pkill -f appium || true
           appium --log appium.log &
           echo "Waiting for Appium to be ready..."
           timeout 30 bash -c 'until curl -s http://127.0.0.1:4723/status > /dev/null; do sleep 2; done'
           echo "Appium is ready"
-
-      - name: Switch JAVA_HOME to 17 for Android SDK Manager
-        run: echo "JAVA_HOME=${JAVA_HOME_17_X64}" >> $GITHUB_ENV
 
       - name: Run mobile tests with retries
         run: |
@@ -83,6 +77,8 @@ jobs:
 
           while [ $COUNT -lt $MAX_RETRIES ]; do
             echo "Attempt $((COUNT+1)) of $MAX_RETRIES..."
+            
+            # Optional: restart Appium between retries
             pkill -f appium || true
             appium --log appium.log &
             sleep 5
