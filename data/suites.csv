@@ -1,91 +1,91 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Fri Mar 13 04:06:32 UTC 2026","Fri Mar 13 04:06:36 UTC 2026","3410","","User Authentication","","Login validation with multiple user types","","Login validation with multiple user types","  As a ShopSphere customer
+"passed","Mon Mar 16 04:33:42 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","4365","","Product API - HTTP Protocol Validation","","GET product by valid ID returns product details","","GET product by valid ID returns product details","  As a QA Engineer
+  I want to validate the Product REST API
+  So that the SOA backend services meet contract requirements"
+"passed","Mon Mar 16 04:34:30 UTC 2026","Mon Mar 16 04:34:31 UTC 2026","1397","","User Authentication","","Successful login with valid credentials","","Successful login with valid credentials","  As a ShopSphere customer
   I want to log into my account
   So that I can access my personalised shopping experience"
-"passed","Fri Mar 13 04:06:29 UTC 2026","Fri Mar 13 04:06:32 UTC 2026","3421","","User Authentication","","Locked out user cannot login","","Locked out user cannot login","  As a ShopSphere customer
-  I want to log into my account
-  So that I can access my personalised shopping experience"
-"passed","Fri Mar 13 04:05:28 UTC 2026","Fri Mar 13 04:05:28 UTC 2026","256","","User Service API Validation","","GET user by valid ID returns user details","","GET user by valid ID returns user details","  As a QA Engineer
-  I want to validate User REST API endpoints
-  So that user management SOA service is functioning correctly"
-"passed","Fri Mar 13 04:06:26 UTC 2026","Fri Mar 13 04:06:29 UTC 2026","3352","","User Authentication","","Login fails with invalid password","","Login fails with invalid password","  As a ShopSphere customer
-  I want to log into my account
-  So that I can access my personalised shopping experience"
-"passed","Fri Mar 13 04:06:44 UTC 2026","Fri Mar 13 04:06:47 UTC 2026","3353","","User Authentication","","Login validation with multiple user types","","Login validation with multiple user types","  As a ShopSphere customer
-  I want to log into my account
-  So that I can access my personalised shopping experience"
-"passed","Fri Mar 13 04:05:28 UTC 2026","Fri Mar 13 04:05:28 UTC 2026","240","","User Service API Validation","","GET user by invalid ID returns HTTP 404","","GET user by invalid ID returns HTTP 404","  As a QA Engineer
-  I want to validate User REST API endpoints
-  So that user management SOA service is functioning correctly"
-"passed","Fri Mar 13 04:05:24 UTC 2026","Fri Mar 13 04:05:28 UTC 2026","3913","","User Service API Validation","","GET all users returns HTTP 200","","GET all users returns HTTP 200","  As a QA Engineer
-  I want to validate User REST API endpoints
-  So that user management SOA service is functioning correctly"
-"passed","Fri Mar 13 04:05:24 UTC 2026","Fri Mar 13 04:05:28 UTC 2026","3689","","Product API - HTTP Protocol Validation","","HEAD request returns headers without body","","HEAD request returns headers without body","  As a QA Engineer
-  I want to validate the Product REST API
-  So that the SOA backend services meet contract requirements"
-"passed","Fri Mar 13 04:05:24 UTC 2026","Fri Mar 13 04:05:28 UTC 2026","3900","","Product API - HTTP Protocol Validation","","GET all products returns HTTP 200 with JSON body","","GET all products returns HTTP 200 with JSON body","  As a QA Engineer
-  I want to validate the Product REST API
-  So that the SOA backend services meet contract requirements"
-"passed","Fri Mar 13 04:06:50 UTC 2026","Fri Mar 13 04:06:54 UTC 2026","3611","","Product Browsing","","Sort products by price low to high","","Sort products by price low to high","  As a ShopSphere customer
-  I want to browse and sort products
-  So that I can find what I want to buy"
-"passed","Fri Mar 13 04:05:24 UTC 2026","Fri Mar 13 04:05:28 UTC 2026","3867","","Product API - HTTP Protocol Validation","","GET products by category returns filtered results","","GET products by category returns filtered results","  As a QA Engineer
-  I want to validate the Product REST API
-  So that the SOA backend services meet contract requirements"
-"passed","Fri Mar 13 04:07:01 UTC 2026","Fri Mar 13 04:07:04 UTC 2026","3352","","Product Browsing","","Add product to cart from listing","","Add product to cart from listing","  As a ShopSphere customer
-  I want to browse and sort products
-  So that I can find what I want to buy"
-"passed","Fri Mar 13 04:06:36 UTC 2026","Fri Mar 13 04:06:44 UTC 2026","7939","","User Authentication","","Login validation with multiple user types","","Login validation with multiple user types","  As a ShopSphere customer
-  I want to log into my account
-  So that I can access my personalised shopping experience"
-"passed","Fri Mar 13 04:06:19 UTC 2026","Fri Mar 13 04:06:22 UTC 2026","3437","","User Authentication","","Successful login with valid credentials","","Successful login with valid credentials","  As a ShopSphere customer
-  I want to log into my account
-  So that I can access my personalised shopping experience"
-"passed","Fri Mar 13 04:05:24 UTC 2026","Fri Mar 13 04:05:28 UTC 2026","3845","","Product API - HTTP Protocol Validation","","POST create product returns HTTP 201","","POST create product returns HTTP 201","  As a QA Engineer
-  I want to validate the Product REST API
-  So that the SOA backend services meet contract requirements"
-"passed","Fri Mar 13 04:05:28 UTC 2026","Fri Mar 13 04:05:28 UTC 2026","309","","User Service API Validation","","GET users in ascending sort order","","GET users in ascending sort order","  As a QA Engineer
-  I want to validate User REST API endpoints
-  So that user management SOA service is functioning correctly"
-"passed","Fri Mar 13 04:05:24 UTC 2026","Fri Mar 13 04:05:28 UTC 2026","3879","","Product API - HTTP Protocol Validation","","DELETE product returns HTTP 200 or 204","","DELETE product returns HTTP 200 or 204","  As a QA Engineer
-  I want to validate the Product REST API
-  So that the SOA backend services meet contract requirements"
-"passed","Fri Mar 13 04:06:47 UTC 2026","Fri Mar 13 04:06:50 UTC 2026","3389","","Product Browsing","","Products page displays items","","Products page displays items","  As a ShopSphere customer
-  I want to browse and sort products
-  So that I can find what I want to buy"
-"passed","Fri Mar 13 04:05:24 UTC 2026","Fri Mar 13 04:05:28 UTC 2026","3860","","Product API - HTTP Protocol Validation","","GET product by invalid ID returns HTTP 404","","GET product by invalid ID returns HTTP 404","  As a QA Engineer
-  I want to validate the Product REST API
-  So that the SOA backend services meet contract requirements"
-"passed","Fri Mar 13 04:05:28 UTC 2026","Fri Mar 13 04:05:29 UTC 2026","664","","User Service API Validation","","GET limited users list respects limit parameter","","GET limited users list respects limit parameter","  As a QA Engineer
-  I want to validate User REST API endpoints
-  So that user management SOA service is functioning correctly"
-"passed","Fri Mar 13 04:05:24 UTC 2026","Fri Mar 13 04:05:28 UTC 2026","3911","","Product API - HTTP Protocol Validation","","PATCH partial update product price","","PATCH partial update product price","  As a QA Engineer
-  I want to validate the Product REST API
-  So that the SOA backend services meet contract requirements"
-"passed","Fri Mar 13 04:05:24 UTC 2026","Fri Mar 13 04:05:28 UTC 2026","3829","","Product API - HTTP Protocol Validation","","PUT update product returns HTTP 200","","PUT update product returns HTTP 200","  As a QA Engineer
-  I want to validate the Product REST API
-  So that the SOA backend services meet contract requirements"
-"passed","Fri Mar 13 04:06:58 UTC 2026","Fri Mar 13 04:07:01 UTC 2026","3489","","Product Browsing","","View product detail page","","View product detail page","  As a ShopSphere customer
-  I want to browse and sort products
-  So that I can find what I want to buy"
-"passed","Fri Mar 13 04:06:22 UTC 2026","Fri Mar 13 04:06:26 UTC 2026","3349","","User Authentication","","Login fails with invalid username","","Login fails with invalid username","  As a ShopSphere customer
-  I want to log into my account
-  So that I can access my personalised shopping experience"
-"passed","Fri Mar 13 04:06:54 UTC 2026","Fri Mar 13 04:06:58 UTC 2026","3536","","Product Browsing","","Sort products by name A to Z","","Sort products by name A to Z","  As a ShopSphere customer
-  I want to browse and sort products
-  So that I can find what I want to buy"
-"passed","Fri Mar 13 04:05:24 UTC 2026","Fri Mar 13 04:05:28 UTC 2026","3892","","Product API - HTTP Protocol Validation","","GET product by valid ID returns product details","","GET product by valid ID returns product details","  As a QA Engineer
-  I want to validate the Product REST API
-  So that the SOA backend services meet contract requirements"
-"passed","Fri Mar 13 04:08:24 UTC 2026","Fri Mar 13 04:08:28 UTC 2026","3788","","End-to-End Checkout Flow","","Complete successful checkout flow","","Complete successful checkout flow","  As a ShopSphere customer
+"passed","Mon Mar 16 04:36:32 UTC 2026","Mon Mar 16 04:36:34 UTC 2026","1622","","End-to-End Checkout Flow","","Checkout fails without filling in required fields","","Checkout fails without filling in required fields","  As a ShopSphere customer
   I want to complete a purchase
   So that I can receive my ordered items"
-"passed","Fri Mar 13 04:08:30 UTC 2026","Fri Mar 13 04:08:32 UTC 2026","2322","","End-to-End Checkout Flow","","Multiple items can be purchased together","","Multiple items can be purchased together","  As a ShopSphere customer
-  I want to complete a purchase
-  So that I can receive my ordered items"
-"passed","Fri Mar 13 04:08:28 UTC 2026","Fri Mar 13 04:08:30 UTC 2026","1604","","End-to-End Checkout Flow","","Checkout fails without filling in required fields","","Checkout fails without filling in required fields","  As a ShopSphere customer
-  I want to complete a purchase
-  So that I can receive my ordered items"
-"passed","Fri Mar 13 04:05:28 UTC 2026","Fri Mar 13 04:05:28 UTC 2026","273","","User Service API Validation","","Login with valid credentials returns token","","Login with valid credentials returns token","  As a QA Engineer
+"passed","Mon Mar 16 04:35:01 UTC 2026","Mon Mar 16 04:35:05 UTC 2026","3656","","Product Browsing","","Sort products by price low to high","","Sort products by price low to high","  As a ShopSphere customer
+  I want to browse and sort products
+  So that I can find what I want to buy"
+"passed","Mon Mar 16 04:33:42 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","4374","","Product API - HTTP Protocol Validation","","DELETE product returns HTTP 200 or 204","","DELETE product returns HTTP 200 or 204","  As a QA Engineer
+  I want to validate the Product REST API
+  So that the SOA backend services meet contract requirements"
+"passed","Mon Mar 16 04:33:46 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","221","","User Service API Validation","","GET limited users list respects limit parameter","","GET limited users list respects limit parameter","  As a QA Engineer
   I want to validate User REST API endpoints
   So that user management SOA service is functioning correctly"
+"passed","Mon Mar 16 04:33:46 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","206","","User Service API Validation","","GET user by valid ID returns user details","","GET user by valid ID returns user details","  As a QA Engineer
+  I want to validate User REST API endpoints
+  So that user management SOA service is functioning correctly"
+"passed","Mon Mar 16 04:33:46 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","191","","User Service API Validation","","Login with valid credentials returns token","","Login with valid credentials returns token","  As a QA Engineer
+  I want to validate User REST API endpoints
+  So that user management SOA service is functioning correctly"
+"passed","Mon Mar 16 04:34:54 UTC 2026","Mon Mar 16 04:34:58 UTC 2026","3423","","User Authentication","","Login validation with multiple user types","","Login validation with multiple user types","  As a ShopSphere customer
+  I want to log into my account
+  So that I can access my personalised shopping experience"
+"passed","Mon Mar 16 04:33:42 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","4150","","Product API - HTTP Protocol Validation","","GET product by invalid ID returns HTTP 404","","GET product by invalid ID returns HTTP 404","  As a QA Engineer
+  I want to validate the Product REST API
+  So that the SOA backend services meet contract requirements"
+"passed","Mon Mar 16 04:33:42 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","4362","","Product API - HTTP Protocol Validation","","PATCH partial update product price","","PATCH partial update product price","  As a QA Engineer
+  I want to validate the Product REST API
+  So that the SOA backend services meet contract requirements"
+"passed","Mon Mar 16 04:34:46 UTC 2026","Mon Mar 16 04:34:54 UTC 2026","7960","","User Authentication","","Login validation with multiple user types","","Login validation with multiple user types","  As a ShopSphere customer
+  I want to log into my account
+  So that I can access my personalised shopping experience"
+"passed","Mon Mar 16 04:35:05 UTC 2026","Mon Mar 16 04:35:08 UTC 2026","3382","","Product Browsing","","Sort products by name A to Z","","Sort products by name A to Z","  As a ShopSphere customer
+  I want to browse and sort products
+  So that I can find what I want to buy"
+"passed","Mon Mar 16 04:33:42 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","4335","","User Service API Validation","","GET all users returns HTTP 200","","GET all users returns HTTP 200","  As a QA Engineer
+  I want to validate User REST API endpoints
+  So that user management SOA service is functioning correctly"
+"passed","Mon Mar 16 04:33:42 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","4375","","Product API - HTTP Protocol Validation","","GET products by category returns filtered results","","GET products by category returns filtered results","  As a QA Engineer
+  I want to validate the Product REST API
+  So that the SOA backend services meet contract requirements"
+"passed","Mon Mar 16 04:33:46 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","291","","User Service API Validation","","GET users in ascending sort order","","GET users in ascending sort order","  As a QA Engineer
+  I want to validate User REST API endpoints
+  So that user management SOA service is functioning correctly"
+"passed","Mon Mar 16 04:33:42 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","4329","","Product API - HTTP Protocol Validation","","HEAD request returns headers without body","","HEAD request returns headers without body","  As a QA Engineer
+  I want to validate the Product REST API
+  So that the SOA backend services meet contract requirements"
+"passed","Mon Mar 16 04:34:39 UTC 2026","Mon Mar 16 04:34:43 UTC 2026","3416","","User Authentication","","Locked out user cannot login","","Locked out user cannot login","  As a ShopSphere customer
+  I want to log into my account
+  So that I can access my personalised shopping experience"
+"passed","Mon Mar 16 04:35:11 UTC 2026","Mon Mar 16 04:35:15 UTC 2026","3438","","Product Browsing","","Add product to cart from listing","","Add product to cart from listing","  As a ShopSphere customer
+  I want to browse and sort products
+  So that I can find what I want to buy"
+"passed","Mon Mar 16 04:33:42 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","4339","","Product API - HTTP Protocol Validation","","POST create product returns HTTP 201","","POST create product returns HTTP 201","  As a QA Engineer
+  I want to validate the Product REST API
+  So that the SOA backend services meet contract requirements"
+"passed","Mon Mar 16 04:36:28 UTC 2026","Mon Mar 16 04:36:32 UTC 2026","3770","","End-to-End Checkout Flow","","Complete successful checkout flow","","Complete successful checkout flow","  As a ShopSphere customer
+  I want to complete a purchase
+  So that I can receive my ordered items"
+"passed","Mon Mar 16 04:33:41 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","4326","","Product API - HTTP Protocol Validation","","PUT update product returns HTTP 200","","PUT update product returns HTTP 200","  As a QA Engineer
+  I want to validate the Product REST API
+  So that the SOA backend services meet contract requirements"
+"passed","Mon Mar 16 04:33:46 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","187","","User Service API Validation","","GET user by invalid ID returns HTTP 404","","GET user by invalid ID returns HTTP 404","  As a QA Engineer
+  I want to validate User REST API endpoints
+  So that user management SOA service is functioning correctly"
+"passed","Mon Mar 16 04:35:08 UTC 2026","Mon Mar 16 04:35:11 UTC 2026","3383","","Product Browsing","","View product detail page","","View product detail page","  As a ShopSphere customer
+  I want to browse and sort products
+  So that I can find what I want to buy"
+"passed","Mon Mar 16 04:34:33 UTC 2026","Mon Mar 16 04:34:36 UTC 2026","3427","","User Authentication","","Login fails with invalid username","","Login fails with invalid username","  As a ShopSphere customer
+  I want to log into my account
+  So that I can access my personalised shopping experience"
+"passed","Mon Mar 16 04:34:36 UTC 2026","Mon Mar 16 04:34:39 UTC 2026","3318","","User Authentication","","Login fails with invalid password","","Login fails with invalid password","  As a ShopSphere customer
+  I want to log into my account
+  So that I can access my personalised shopping experience"
+"passed","Mon Mar 16 04:34:43 UTC 2026","Mon Mar 16 04:34:46 UTC 2026","3387","","User Authentication","","Login validation with multiple user types","","Login validation with multiple user types","  As a ShopSphere customer
+  I want to log into my account
+  So that I can access my personalised shopping experience"
+"passed","Mon Mar 16 04:36:34 UTC 2026","Mon Mar 16 04:36:36 UTC 2026","2228","","End-to-End Checkout Flow","","Multiple items can be purchased together","","Multiple items can be purchased together","  As a ShopSphere customer
+  I want to complete a purchase
+  So that I can receive my ordered items"
+"passed","Mon Mar 16 04:33:42 UTC 2026","Mon Mar 16 04:33:46 UTC 2026","4388","","Product API - HTTP Protocol Validation","","GET all products returns HTTP 200 with JSON body","","GET all products returns HTTP 200 with JSON body","  As a QA Engineer
+  I want to validate the Product REST API
+  So that the SOA backend services meet contract requirements"
+"passed","Mon Mar 16 04:34:58 UTC 2026","Mon Mar 16 04:35:01 UTC 2026","3331","","Product Browsing","","Products page displays items","","Products page displays items","  As a ShopSphere customer
+  I want to browse and sort products
+  So that I can find what I want to buy"
